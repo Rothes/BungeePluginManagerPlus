@@ -1,0 +1,28 @@
+Sender:
+  Prefix: '&6&lBPM&3&l+ &e> '
+  Commands:
+    Help:
+      Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
+      Load: '§7 * §e/bpmp load <Plugin> §7- §bLoad the plugin'
+      Unload: '§7 * §e/bpmp unload <Plugin> §7- §bUnload the plugin'
+      Reload: '§7 * §e/bpmp reload <Plugin> §7- §bReload the plugin'
+      Footer: '&7&m-----------------------------------------'
+    Load:
+      Success-Main-Message: '&aSuccessfully loading the plugin.'
+      Failed-Main-Message: '&cFailed to load the plugin.'
+      Plugin-Not-Found: '§cThe specified plugin could not be found.'
+      Invalid-Plugin-Description: '§cUnable to load, the plugin description file is invalid.'
+      Missing-Dependency: '§cUnable to load, missing depend plugin: §f%0% §c.'
+      Plugin-Already-Loaded: '§cThis plugin is already loaded.'
+      Success-Loaded-Plugin: '§aSuccessfully loading the plugin §f%0% §a.'
+      Failed-Loading-Plugin: '§cFailed to load the plugin §f%0% §c.'
+    Unload:
+      Success-Main-Message: '&aSuccessfully unloading the plugin.'
+      Failed-Main-Message: '&cFailed to unload the plugin.'
+      Plugin-Not-Exist: '§cServer doesn't exist the plugin §f%0% §c.'
+      Success-Unloaded-Plugin: '§aSuccessfully unloading the plugin §f%0% §a.'
+      Failed-Unloading-Plugin: '§cFailed to unload the plugin §f%0% §c.'
+    Reload:
+      Success-Main-Message: '&aSuccessfully reloading the plugin.'
+      Failed-Main-Message: '&cFailed to reload the plugin.'
+      Success-Reloaded-Plugin: '§aSuccessfully reloading the plugin §f%0% §a.'

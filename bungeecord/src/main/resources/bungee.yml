@@ -1,0 +1,5 @@
+name: 'BungeePluginManagerPlus'
+main: 'io.github.rothes.bungeepluginmanagerplus.bungeecord.BungeePluginManagerPlus'
+version: '${projectVersionString}'
+author: 'Rothes'
+description: 'Manage the plugins while running the proxy.'

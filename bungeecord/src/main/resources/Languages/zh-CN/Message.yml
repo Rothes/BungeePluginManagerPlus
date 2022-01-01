@@ -1,0 +1,28 @@
+Sender:
+  Prefix: '&6&lBPM&3&l+ &e> '
+  Commands:
+    Help:
+      Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
+      Load: '§7 * §e/bpmp load <插件名> §7- §b加载插件'
+      Unload: '§7 * §e/bpmp unload <插件名> §7- §b卸载插件'
+      Reload: '§7 * §e/bpmp reload <插件名> §7- §b重载插件'
+      Footer: '&7&m-----------------------------------------'
+    Load:
+      Success-Main-Message: '&a加载插件成功.'
+      Failed-Main-Message: '&c加载插件失败.'
+      Plugin-Not-Found: '§c找不到指定的插件.'
+      Invalid-Plugin-Description: '§c无法加载, 插件信息文件无效.'
+      Missing-Dependency: '§c无法加载, 缺少前置插件: §f%0% §c.'
+      Plugin-Already-Loaded: '§c该插件已经加载了, 不可重复加载.'
+      Success-Loaded-Plugin: '§a成功加载插件 §f%0% §a.'
+      Failed-Loading-Plugin: '§c加载插件 §f%0% §c时发生错误.'
+    Unload:
+      Success-Main-Message: '&a卸载插件成功.'
+      Failed-Main-Message: '&c卸载插件失败.'
+      Plugin-Not-Exist: '§c不存在此插件 §f%0% §c.'
+      Success-Unloaded-Plugin: '§a成功卸载插件 §f%0% §a.'
+      Failed-Unloading-Plugin: '§c卸载插件 §f%0% §c时发生错误.'
+    Reload:
+      Success-Main-Message: '&a重载插件成功.'
+      Failed-Main-Message: '&c重载插件失败.'
+      Success-Reloaded-Plugin: '§a成功重载插件 §f%0% §a.'

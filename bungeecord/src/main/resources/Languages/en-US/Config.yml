@@ -1,0 +1,4 @@
+Options:
+  # Locale language. Will search for specified .yml file in Locales folder.
+  # Please follow the specification: language(Lower case)-location(Upper case) to fill it.
+  Locale: 'en-US'
