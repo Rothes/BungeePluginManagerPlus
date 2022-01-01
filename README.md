@@ -1,6 +1,6 @@
 # BungeePluginManagerPlus
 
-A plugin for BungeeCord / WaterFall that allows you to manage your BungeeCord plugins dynamically.
+A plugin for BungeeCord / Waterfall that allows you to manage your BungeeCord plugins dynamically.
 
 ## Related Links
 
