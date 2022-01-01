@@ -6,7 +6,7 @@ internal val plugin: BungeePluginManagerPlus by lazy {
     BungeePluginManagerPlus.API as BungeePluginManagerPlus
 }
 
-internal fun log(msg: String) {
+internal fun info(msg: String) {
     plugin.logger.info(msg)
 }
 

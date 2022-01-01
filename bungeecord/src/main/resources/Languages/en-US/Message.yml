@@ -26,3 +26,9 @@ Sender:
       Success-Main-Message: '&aSuccessfully reloading the plugin.'
       Failed-Main-Message: '&cFailed to reload the plugin.'
       Success-Reloaded-Plugin: '§aSuccessfully reloading the plugin §f%0% §a.'
+
+Console-Sender:
+  Updater:
+    Error-Checking-Version-Connection: '§cFailed to check version informations via server, Please try updating your plugin: %0%'
+    Error-Parsing-Json: '§cFailed to parse version informations Json, Please update your plugin: %0%'
+    Invalid-Channel: '§cPlugin is in a invalid channel ("%0%"). Please update your plugin to the latest version.'

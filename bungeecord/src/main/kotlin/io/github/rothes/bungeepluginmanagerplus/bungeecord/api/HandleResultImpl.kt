@@ -4,7 +4,7 @@ import io.github.rothes.bungeepluginmanagerplus.api.Action
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.error
-import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.log
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -18,15 +18,15 @@ class HandleResultImpl constructor(
     internal fun sendResult(sender: CommandSender) {
         if (sender === ProxyServer.getInstance().console) {
             if (success) {
-                log(I18nHelper.getLocaleMessage(action.getMainMessageNode(true)))
-                log(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
+                info(I18nHelper.getLocaleMessage(action.getMainMessageNode(true)))
+                info(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
             } else {
                 error(I18nHelper.getLocaleMessage(action.getMainMessageNode(false)))
                 error(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
             }
         } else {
-            log(I18nHelper.getLocaleMessage(action.getMainMessageNode(success)))
-            log(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
+            info(I18nHelper.getLocaleMessage(action.getMainMessageNode(success)))
+            info(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
             sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getPrefixedLocaleMessage(action.getMainMessageNode(success))).create())
             sender.sendMessage(*ComponentBuilder().appendLegacy(message).create())
         }

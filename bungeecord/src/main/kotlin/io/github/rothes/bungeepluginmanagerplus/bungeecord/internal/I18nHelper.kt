@@ -16,7 +16,8 @@ object I18nHelper {
         locale += System.getProperty("user.country", Locale.getDefault().country)
         locale
     }
-    private lateinit var locale: String
+    internal lateinit var locale: String
+        private set
 
     private var messages = mutableMapOf<String, String>()
 

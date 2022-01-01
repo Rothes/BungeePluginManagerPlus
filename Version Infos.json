@@ -1,1 +1,33 @@
-
+{
+  "Version_Channels": {
+    "Stable": {
+      "Latest_Version_Number": 2,
+      "Actions": [],
+      "Log_Level": "Info",
+      "Message": {
+        "en-US": "§bA new version of BPM+ (\"1.0.0\") is available!\n§bPlease Update!",
+        "zh-CN": "§bBungeePluginManager+ 有新版本 (\"1.0.0\") 了!\n§b请更新您的插件!"
+      }
+    }
+  },
+  "Version_Actions": {
+    "0-233": {
+      "Log_Level": "Info",
+      "Actions": [],
+      "Message_Times": 2,
+      "Message": {
+        "en-US": "§bEnjoy BPM+? Join our Discord: https://discord.gg/EJ9FsbMPkj",
+        "zh-CN": "§b欢迎加入我们的空巢 QQ群: 422532220!"
+      }
+    },
+    "0-1-Test": {
+      "Log_Level": "Info",
+      "Actions": [],
+      "Message_Times": 3,
+      "Message": {
+        "en-US": "§bTest!",
+        "zh-CN": "§bTest."
+      }
+    }
+  }
+}

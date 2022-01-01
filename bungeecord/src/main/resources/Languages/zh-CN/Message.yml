@@ -26,3 +26,9 @@ Sender:
       Success-Main-Message: '&a重载插件成功.'
       Failed-Main-Message: '&c重载插件失败.'
       Success-Reloaded-Plugin: '§a成功重载插件 §f%0% §a.'
+
+Console-Sender:
+  Updater:
+    Error-Checking-Version-Connection: '§c无法连接至远程服务器检查版本信息, 请尝试更新您的插件: %0%'
+    Error-Parsing-Json: '§c无法正常解析版本信息 Json, 请更新您的插件至最新版本: %0%'
+    Invalid-Channel: '§c您使用的插件处于一个未知的版本通道("%0%"). 请更新您的插件到最新版本.'

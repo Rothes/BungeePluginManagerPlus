@@ -5,6 +5,7 @@ import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.BungeeCordDisguiseLogger
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Updater
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands.CommandHandler
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.plugin
 import net.md_5.bungee.api.plugin.Plugin
@@ -42,6 +43,7 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
             plugin.dataFolder.mkdir()
         I18nHelper.init()
         proxy.pluginManager.registerCommand(this, CommandHandler)
+        Updater.start()
     }
 
     override fun loadPlugin(plugin: String): HandleResult {
