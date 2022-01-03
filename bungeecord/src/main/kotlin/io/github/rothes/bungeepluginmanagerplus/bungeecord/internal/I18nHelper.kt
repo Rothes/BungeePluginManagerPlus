@@ -5,6 +5,9 @@ import net.md_5.bungee.config.Configuration
 import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
 import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
 
@@ -18,28 +21,39 @@ object I18nHelper {
     }
     internal lateinit var locale: String
         private set
+    private lateinit var localeConfig: Configuration
 
     private var messages = mutableMapOf<String, String>()
 
     internal fun init() {
-        exportDefaultConfig()
+        val configFile = File(plugin.dataFolder, "Config.yml")
+        if (!configFile.exists()) {
+            configFile.parentFile.mkdirs()
+            getDefaultConfig().use {
+                Files.copy(it, configFile.toPath())
+            }
+        }
         locale = ConfigurationProvider.getProvider(YamlConfiguration::class.java)
             .load(File(plugin.dataFolder, "Config.yml")).getString("Options.Locale")
-        exportLocales()
-        loadLocale()
+
+        val localeFile = File(plugin.dataFolder, "Locale/$locale/Message.yml")
+        if (!localeFile.exists()) {
+            localeFile.parentFile.mkdirs()
+            getDefaultLocale().use {
+                Files.copy(it, localeFile.toPath())
+            }
+        }
+        localeConfig = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(localeFile)
+        messages.putAll(getLocaleKaddeys(localeConfig))
+        checkLocaleKeys()
     }
 
     fun getPrefixedLocaleMessage(key: String, vararg replacements: String): String {
-        var msg = messages[key]!!
-
-        for (i in replacements.indices) {
-            msg = msg.replace("%$i%", replacements[i])
-        }
-        return messages["Sender.Prefix"] + msg
+        return getLocaleMessage("Sender.Prefix") + getLocaleMessage(key, *replacements)
     }
 
     fun getLocaleMessage(key: String, vararg replacements: String): String {
-        var msg = messages[key]!!
+        var msg = messages[key] ?: "§cMissing locale key: $key"
 
         for (i in replacements.indices) {
             msg = msg.replace("%$i%", replacements[i])
@@ -47,51 +61,51 @@ object I18nHelper {
         return msg
     }
 
-    private fun exportDefaultConfig() {
-        val file = File(plugin.dataFolder, "Config.yml")
-        if (file.exists())
-            return
-
-        (plugin.getResourceAsStream("Languages/$osLocale/Config.yml")
-            ?: plugin.getResourceAsStream("Languages/en-US/Config.yml"))!!.use {
-                Files.copy(it, file.toPath())
-            }
+    private fun getDefaultConfig(): InputStream {
+        return (plugin.getResourceAsStream("Languages/$osLocale/Config.yml")
+            ?: plugin.getResourceAsStream("Languages/en-US/Config.yml"))!!
     }
 
-    private fun exportLocales() {
-        val localeFile = File(plugin.dataFolder, "Locale/$locale/Message.yml")
-        if (localeFile.exists())
-            return
-
-        localeFile.parentFile.mkdirs()
-        (plugin.getResourceAsStream("Languages/$locale/Message.yml")
+    private fun getDefaultLocale(): InputStream {
+        return (plugin.getResourceAsStream("Languages/$locale/Message.yml")
             ?: plugin.getResourceAsStream("Languages/$osLocale/Message.yml")
-                ?: plugin.getResourceAsStream("Languages/en-US/Message.yml"))!!.use {
-                    Files.copy(it, localeFile.toPath())
-                }
+                ?: plugin.getResourceAsStream("Languages/en-US/Message.yml"))!!
     }
 
-    private fun loadLocale() {
-        val localeFile = File(plugin.dataFolder, "Locale/$locale/Message.yml")
-        val config = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(localeFile)
+    private fun checkLocaleKeys() {
+        val default = getDefaultLocale().use {
+            ConfigurationProvider.getProvider(YamlConfiguration::class.java)
+                .load(InputStreamReader(it, StandardCharsets.UTF_8))
+        }
+        for (entry in getLocaleKaddeys(default).entries) {
+            if (!messages.containsKey(entry.key)) {
+                messages[entry.key] = entry.value
+                localeConfig.set(entry.key, entry.value)
+            }
+        }
+        ConfigurationProvider.getProvider(YamlConfiguration::class.java)
+            .save(localeConfig, File(plugin.dataFolder, "Locale/$locale/Message.yml"))
+    }
+
+    private fun getLocaleKaddeys(config: Configuration): Map<String, String> {
+        val map = mutableMapOf<String, String>()
         for (key in config.keys) {
             val get = config.get(key)
             if (get is String)
-                messages[key] = ChatColor.translateAlternateColorCodes('&', get)
-            else
-                loadKeys(config, key)
+                map[key] = ChatColor.translateAlternateColorCodes('&', get)
+            else addLocaleKaddeys(map,config, key)
         }
+        return map
     }
 
-    private fun loadKeys(config: Configuration, path: String) {
+    private fun addLocaleKaddeys(map: MutableMap<String, String>, config: Configuration, path: String) {
         val section = config.get(path)
         if (section is Configuration)
             for (key in section.keys) {
                 val get = config.get("$path.$key")
                 if (get is String)
-                    messages["$path.$key"] = ChatColor.translateAlternateColorCodes('&', config.getString("$path.$key"))
-                else
-                    loadKeys(config, "$path.$key")
+                    map["$path.$key"] = ChatColor.translateAlternateColorCodes('&', config.getString("$path.$key"))
+                else addLocaleKaddeys(map, config, "$path.$key")
             }
     }
 

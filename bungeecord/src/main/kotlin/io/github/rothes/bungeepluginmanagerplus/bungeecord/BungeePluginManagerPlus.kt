@@ -7,7 +7,6 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Updater
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands.CommandHandler
-import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.plugin
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File
 
@@ -39,8 +38,6 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
     }
 
     override fun onEnable() {
-        if (!plugin.dataFolder.exists())
-            plugin.dataFolder.mkdir()
         I18nHelper.init()
         proxy.pluginManager.registerCommand(this, CommandHandler)
         Updater.start()
