@@ -8,5 +8,6 @@ interface BungeePluginManagerPlusAPI {
     fun loadPlugin(plugin: File): HandleResult
     fun unloadPlugin(plugin: String): HandleResult
     fun reloadPlugin(plugin: String): HandleResult
+    fun getPlugins(): Array<ProxyPlugin>
 
 }

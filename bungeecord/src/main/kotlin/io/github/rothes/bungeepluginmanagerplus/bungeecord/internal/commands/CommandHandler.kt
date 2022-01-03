@@ -8,12 +8,18 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.plugin.Command
+import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.TabExecutor
 import java.util.*
 
-object CommandHandler : Command("bungeepluginmanagerplus", "bungeepluginmanagerplus.admin", "bpmp"), TabExecutor {
+object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExecutor {
 
     override fun execute(sender: CommandSender, args: Array<out String>) {
+        if (!sender.hasPermission("bungeepluginmanagerplus.admin")) {
+            sender.sendMessage(*ComponentBuilder()
+                .appendLegacy(I18nHelper.getPrefixedLocaleMessage("Sender.No-Permission")).create())
+            return
+        }
         if (args.isNotEmpty()) {
             when (args[0].uppercase(Locale.ROOT)) {
                 "LOAD" -> {
@@ -34,6 +40,33 @@ object CommandHandler : Command("bungeepluginmanagerplus", "bungeepluginmanagerp
                         return
                     }
                 }
+                "LIST" -> {
+                    if (args.size == 1) {
+                        @Suppress("UNCHECKED_CAST")
+                        val plugins = mutableListOf<String>()
+                        val modules = mutableListOf<String>()
+                        for (plugin in PluginManager.getPlugins()) {
+                            val des = (plugin.instance as Plugin).description
+                            if (des.file.startsWith("modules"))
+                                modules.add(des.name)
+                            else
+                                plugins.add(des.name)
+                        }
+                        val builder = StringBuilder(I18nHelper.getLocaleMessage("Sender.Commands.List.Message-Format"
+                            , "§2${plugins.size}${if (modules.size > 0) " §a+ §e${modules.size}" else ""}")
+                                + "§f: ")
+                        for (plugin in plugins) {
+                            builder.append("§a${plugin}§f, ")
+                        }
+                        for (module in modules) {
+                            builder.append("§e${module}§f, ")
+                        }
+                        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Prefix"))
+                            .appendLegacy("§r").strikethrough(false).bold(false)
+                            .appendLegacy(builder.toString().substring(0, builder.length - 2) + ".").create())
+                        return
+                    }
+                }
             }
         }
         sendHelp(sender)
@@ -44,9 +77,11 @@ object CommandHandler : Command("bungeepluginmanagerplus", "bungeepluginmanagerp
             result.sendResult(sender)
     }
 
-    fun sendHelp(sender: CommandSender) {
+    private fun sendHelp(sender: CommandSender) {
         // Hard code since there's a bug with chat component.
-        sender.sendMessage(*ComponentBuilder().appendLegacy("§7§m------").appendLegacy("").strikethrough(false).appendLegacy("§l §7[ §6§lBungeePluginManager§3§l+§7 ]§l ").appendLegacy("§7§m------").create())
+        sender.sendMessage(*ComponentBuilder().appendLegacy("§7§m------").appendLegacy("").strikethrough(false)
+            .appendLegacy("§l §7[ §6§lBungeePluginManager§3§l+§7 ]§l ").appendLegacy("§7§m------").create())
+        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.List")).create())
         sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Load")).create())
         sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Unload")).create())
         sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Reload")).create())
@@ -60,6 +95,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", "bungeepluginmanagerp
                 list.add("load")
                 list.add("unload")
                 list.add("reload")
+                list.add("list")
             }
             2 -> {
                 when (args[0].uppercase(Locale.ROOT)) {

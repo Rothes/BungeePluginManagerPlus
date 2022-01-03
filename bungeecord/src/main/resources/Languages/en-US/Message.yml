@@ -1,12 +1,16 @@
 Sender:
   Prefix: '&6&lBPM&3&l+ &e> '
+  No-Permission: '§cYou don''t have the permission to do that.'
   Commands:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
+      List: '§7 * §e/bpmp list §7- §bList plugins and modules'
       Load: '§7 * §e/bpmp load <Plugin> §7- §bLoad the plugin'
       Unload: '§7 * §e/bpmp unload <Plugin> §7- §bUnload the plugin'
       Reload: '§7 * §e/bpmp reload <Plugin> §7- §bReload the plugin'
       Footer: '&7&m-----------------------------------------'
+    List:
+      Message-Format: '§fPlugins §7(%0%§7)'
     Load:
       Success-Main-Message: '&aSuccessfully loading the plugin.'
       Failed-Main-Message: '&cFailed to load the plugin.'

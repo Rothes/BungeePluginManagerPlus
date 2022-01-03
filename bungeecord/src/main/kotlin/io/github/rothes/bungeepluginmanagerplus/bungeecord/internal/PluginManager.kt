@@ -2,7 +2,9 @@ package io.github.rothes.bungeepluginmanagerplus.bungeecord.internal
 
 import io.github.rothes.bungeepluginmanagerplus.api.Action
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.HandleResultImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyPluginImpl
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.PluginDescription
@@ -106,6 +108,17 @@ object PluginManager {
             return HandleResultImpl(Action.RELOAD, false, load.message)
         return HandleResultImpl(Action.RELOAD, true,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Reload.Success-Reloaded-Plugin", plugin))
+    }
+
+    internal fun getPlugins() : Array<ProxyPlugin> {
+        val plugins = ProxyServer.getInstance().pluginManager.plugins
+        val list = mutableListOf<ProxyPlugin>()
+        for (plugin in plugins) {
+            list.add(ProxyPluginImpl(plugin.description.name, plugin))
+        }
+        return list.also { it ->
+            it.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+        }.toTypedArray()
     }
 
     private fun searchPlugin(plugin: String) : File? {

@@ -1,12 +1,16 @@
 Sender:
   Prefix: '&6&lBPM&3&l+ &e> '
+  No-Permission: '§c您没有权限这么做.'
   Commands:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
+      List: '§7 * §e/bpmp list §7- §b列出所有插件和模块'
       Load: '§7 * §e/bpmp load <插件名> §7- §b加载插件'
       Unload: '§7 * §e/bpmp unload <插件名> §7- §b卸载插件'
       Reload: '§7 * §e/bpmp reload <插件名> §7- §b重载插件'
       Footer: '&7&m-----------------------------------------'
+    List:
+      Message-Format: '§f插件列表 §7(%0%§7)'
     Load:
       Success-Main-Message: '&a加载插件成功.'
       Failed-Main-Message: '&c加载插件失败.'

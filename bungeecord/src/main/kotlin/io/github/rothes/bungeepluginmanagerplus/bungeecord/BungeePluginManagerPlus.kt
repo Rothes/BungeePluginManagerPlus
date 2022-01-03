@@ -2,6 +2,7 @@ package io.github.rothes.bungeepluginmanagerplus.bungeecord
 
 import io.github.rothes.bungeepluginmanagerplus.api.BungeePluginManagerPlusAPI
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.BungeeCordDisguiseLogger
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
@@ -57,6 +58,10 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
 
     override fun reloadPlugin(plugin: String): HandleResult {
         return PluginManager.reloadPlugin(plugin)
+    }
+
+    override fun getPlugins(): Array<ProxyPlugin> {
+        return PluginManager.getPlugins()
     }
 
     companion object {
