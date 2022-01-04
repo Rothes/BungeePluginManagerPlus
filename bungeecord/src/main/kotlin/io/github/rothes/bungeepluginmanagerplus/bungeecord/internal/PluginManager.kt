@@ -42,6 +42,7 @@ object PluginManager {
         method
     }
 
+
     internal fun loadPlugin(plugin: String): HandleResult {
         val file = searchPlugin(plugin) ?: return HandleResultImpl(Action.LOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Not-Found"))
@@ -60,8 +61,6 @@ object PluginManager {
         if (bcPlugins.containsKey(pluginDes.name)) return HandleResultImpl(Action.LOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Already-Loaded"))
 
-        pluginDes.file = plugin
-        bcToLoad[pluginDes.name] = pluginDes
         return try {
             val success = enablePluginMethod.invoke(ProxyServer.getInstance().pluginManager,
                 HashMap<PluginDescription, Boolean>(), Stack<PluginDescription>(), pluginDes) as Boolean
@@ -70,6 +69,8 @@ object PluginManager {
                 this?.onLoad()
                 this?.onEnable()
             }
+            pluginDes.file = plugin
+            bcToLoad[pluginDes.name] = pluginDes
             HandleResultImpl(Action.LOAD, success,
                 if (success) I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Success-Loaded-Plugin", pluginDes.name)
                 else I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Failed-Loading-Plugin", pluginDes.name))
@@ -128,26 +129,16 @@ object PluginManager {
         if (folder.exists()) {
             // First search for plugin description equals.
             result = folder.listFiles()?.firstOrNull {
-                if (isPluginJar(it)) {
-                    return@firstOrNull getPluginDesYaml(it)?.name?.contentEquals(plugin, true) == true
-                }
-                false
-
+                isDesNameEquals(it, plugin)
             // If not found, then search for plugin description contains.
             } ?: folder.listFiles()?.firstOrNull {
-                if (isPluginJar(it)) {
-                    return@firstOrNull getPluginDesYaml(it)?.name?.contains(plugin, true) == true
-                }
-                false
-
+                isDesNameContains(it, plugin)
             // If not found, finally, search for file name contains.
             } ?: folder.listFiles()?.firstOrNull {
-                if (isPluginJar(it) && (it.nameWithoutExtension.contentEquals(plugin, true) ||
-                    (plugin.length > 4 && it.nameWithoutExtension.contains(plugin, true)))) {
-                    val jar = JarFile(it)
-                    return@firstOrNull (jar.getJarEntry("bungee.yml") ?: jar.getJarEntry("plugin.yml")) != null
-                }
-                false
+                isFileNameContains(it, plugin)
+            // Or it's a module.
+            } ?: File(folder.parentFile, "modules").listFiles()?.firstOrNull() {
+                isDesNameEquals(it, plugin)
             }
         }
 
@@ -164,6 +155,29 @@ object PluginManager {
             ?: return null
 
         return Yaml().loadAs(jar.getInputStream(pluginDesFile), PluginDescription::class.java)
+    }
+
+    private fun isDesNameEquals(file: File, name: String): Boolean {
+        if (isPluginJar(file)) {
+            return getPluginDesYaml(file)?.name?.contentEquals(name, true) == true
+        }
+        return false
+    }
+
+    private fun isDesNameContains(file: File, name: String): Boolean {
+        if (isPluginJar(file) && name.length >= 4) {
+            return getPluginDesYaml(file)?.name?.contains(name, true) == true
+        }
+        return false
+    }
+
+    private fun isFileNameContains(file: File, name: String): Boolean {
+        if (isPluginJar(file) && (file.nameWithoutExtension.contentEquals(name, true) ||
+                    (name.length >= 4 && file.nameWithoutExtension.contains(name, true)))) {
+            val jar = JarFile(file)
+            return (jar.getJarEntry("bungee.yml") ?: jar.getJarEntry("plugin.yml")) != null
+        }
+        return false
     }
 
 }
