@@ -5,10 +5,28 @@ Sender:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
       List: '§7 * §e/bpmp list §7- §bList plugins and modules'
+      Info: '§7 * §e/bpmp info <Plugin> §7- §bShow plugin info'
       Load: '§7 * §e/bpmp load <Plugin> §7- §bLoad the plugin'
       Unload: '§7 * §e/bpmp unload <Plugin> §7- §bUnload the plugin'
       Reload: '§7 * §e/bpmp reload <Plugin> §7- §bReload the plugin'
+      Enable: '§7 * §e/bpmp enable <Plugin> §7- §bEnable the plugin'
+      Disable: '§7 * §e/bpmp disable <Plugin> §7- §bDisable the plugin'
+      Update: '§7 * §e/bpmp update <Plugin> §7- §bUpdate the plugin'
+      Command-List: '§7 * §e/bpmp cl §7- §bList registered commands'
+      Command-Info: '§7 * §e/bpmp ci <Command> §7- §bShow command info'
+      Command-Remove: '§7 * §e/bpmp cr <Command> §7- §bRemove the command'
       Footer: '&7&m-----------------------------------------'
+    Info:
+      Plugin-Not-Found: '§cThe specified plugin could not be found.'
+      Plugin-Name: '§aName§f: %0%'
+      Plugin-Version: '§aVersion§f: %0%'
+      Plugin-Author: '§aAuthor§f: %0%'
+      Plugin-Description: '§aDescription§f: %0%'
+      Plugin-Depends: '§aDepends§f: %0%'
+      Plugin-Soft-Depends: '§aSoft Depends§f: %0%'
+      Plugin-Libraries: '§aLibraries§f: %0%'
+      Plugin-Commands: '§aCommands§f: %0%'
+      Plugin-File: '§aFile Path§f: %0%'
     List:
       Message-Format: '§fPlugins §7(%0%§7)'
     Load:
@@ -18,20 +36,52 @@ Sender:
       Invalid-Plugin-Description: '§cUnable to load, the plugin description file is invalid.'
       Missing-Dependency: '§cUnable to load, missing depend plugin: §f%0% §c.'
       Plugin-Already-Loaded: '§cThis plugin is already loaded.'
-      Success-Loaded-Plugin: '§aSuccessfully loading the plugin §f%0% §a.'
+      Success-Loaded-Plugin: '§aSuccessfully loaded the plugin §f%0% §a.'
       Failed-Loading-Plugin: '§cFailed to load the plugin §f%0% §c.'
     Unload:
       Success-Main-Message: '&aSuccessfully unloading the plugin.'
       Failed-Main-Message: '&cFailed to unload the plugin.'
       Plugin-Not-Exist: '§cServer doesn't exist the plugin §f%0% §c.'
-      Success-Unloaded-Plugin: '§aSuccessfully unloading the plugin §f%0% §a.'
+      Success-Unloaded-Plugin: '§aSuccessfully unloaded the plugin §f%0% §a.'
       Failed-Unloading-Plugin: '§cFailed to unload the plugin §f%0% §c.'
     Reload:
       Success-Main-Message: '&aSuccessfully reloading the plugin.'
       Failed-Main-Message: '&cFailed to reload the plugin.'
-      Success-Reloaded-Plugin: '§aSuccessfully reloading the plugin §f%0% §a.'
+      Success-Reloaded-Plugin: '§aSuccessfully reloaded the plugin §f%0% §a.'
+    Enable:
+      Success-Main-Message: '&aSuccessfully enabling the plugin.'
+      Failed-Main-Message: '&cFailed to enable the plugin.'
+      Plugin-Not-Found: '§cThe specified ''.disabled'' plugin could not be found.'
+      Success-Reloaded-Plugin: '§aSuccessfully enabled and loaded the plugin §f%0% §a.'
+    Disable:
+      Success-Main-Message: '&aSuccessfully disabling the plugin.'
+      Failed-Main-Message: '&cFailed to disable the plugin.'
+      Success-Reloaded-Plugin: '§aSuccessfully unloaded and disabled the plugin §f%0% §a.'
+    Update:
+      Success-Main-Message: '&aSuccessfully updating the plugin.'
+      Failed-Main-Message: '&cFailed to update the plugin.'
+      Reverted-Old-Version: ' Reverting.'
+      Plugin-Not-Found: '§cThe specified plugin could not be found. Is it already loaded?'
+      Update-Not-Found: '§cCannot find the plugin with a different version in the plugin folder.'
+      Success-Updated-Plugin: '§aSuccessfully updated the plugin §f%0% §7(%1% -> %2%)§a.'
+    Command-List:
+      Message-Format: '§fCommands §7(%0%§7)'
+    Command-Info:
+      Command-Not-Found: '§cThe specified command could not be found.'
+      Command-Name: '§aName§f: %0%'
+      Command-Permission: '§aPermission§f: %0%'
+      Command-Aliases: '§aAliases§f: %0%'
+      Command-Plugin: '§aRegistered Plugin§f: %0%'
+    Command-Remove:
+      Success-Main-Message: '&aSuccessfully removed the command.'
+      Failed-Main-Message: '&cFailed to remove the command.'
+      Command-Not-Found: '§cThe specified command could not be found.'
+      Success-Removed-Command: '§aSuccessfully removed command §f%0% §a.'
 
 Console-Sender:
+  Rename-File:
+    Windows-Warning: '§cOn Windows OS, due to file lock restrictions, disable and update command may not work properly. Please use them with caution..'
+    Failed-To-Rename: '§cFailed to rename file: §f%0%'
   Updater:
     Error-Checking-Version-Connection: '§cFailed to check version informations via server, Please try updating your plugin: %0%'
     Error-Parsing-Json: '§cFailed to parse version informations Json, Please update your plugin: %0%'

@@ -2,12 +2,14 @@ package io.github.rothes.bungeepluginmanagerplus.bungeecord
 
 import io.github.rothes.bungeepluginmanagerplus.api.BungeePluginManagerPlusAPI
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyCommand
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.BungeeCordDisguiseLogger
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Updater
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands.CommandHandler
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import net.md_5.bungee.api.plugin.Plugin
 import java.io.File
 
@@ -42,6 +44,11 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
         I18nHelper.init()
         proxy.pluginManager.registerCommand(this, CommandHandler)
         Updater.start()
+        info(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Windows-Warning"))
+    }
+
+    override fun getPlugins(): Array<ProxyPlugin> {
+        return PluginManager.getPlugins()
     }
 
     override fun loadPlugin(plugin: String): HandleResult {
@@ -60,8 +67,32 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
         return PluginManager.reloadPlugin(plugin)
     }
 
-    override fun getPlugins(): Array<ProxyPlugin> {
-        return PluginManager.getPlugins()
+    override fun enablePlugin(plugin: String): HandleResult {
+        return PluginManager.enablePlugin(plugin)
+    }
+
+    override fun disablePlugin(plugin: String): HandleResult {
+        return PluginManager.disablePlugin(plugin)
+    }
+
+    override fun updatePlugin(plugin: String): HandleResult {
+        return PluginManager.updatePlugin(plugin)
+    }
+
+    override fun getCommandByName(command: String): ProxyCommand? {
+        return PluginManager.getCommandByName(command)
+    }
+
+    override fun getCommandsByPlugin(plugin: ProxyPlugin): Array<ProxyCommand> {
+        return PluginManager.getCommandsByPlugin(plugin)
+    }
+
+    override fun getCommandsAll(): Array<ProxyCommand> {
+        return PluginManager.getCommandsAll()
+    }
+
+    override fun removeCommand(command: ProxyCommand): HandleResult {
+        return PluginManager.removeCommand(command)
     }
 
     companion object {

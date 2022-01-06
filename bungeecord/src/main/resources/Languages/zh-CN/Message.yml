@@ -5,10 +5,28 @@ Sender:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
       List: '§7 * §e/bpmp list §7- §b列出所有插件和模块'
+      Info: '§7 * §e/bpmp info <插件名> §7- §b获取插件信息'
       Load: '§7 * §e/bpmp load <插件名> §7- §b加载插件'
       Unload: '§7 * §e/bpmp unload <插件名> §7- §b卸载插件'
       Reload: '§7 * §e/bpmp reload <插件名> §7- §b重载插件'
+      Enable: '§7 * §e/bpmp enable <插件名> §7- §b启用插件'
+      Disable: '§7 * §e/bpmp disable <插件名> §7- §b禁用插件'
+      Update: '§7 * §e/bpmp update <插件名> §7- §b更新插件'
+      Command-List: '§7 * §e/bpmp cl §7- §b列出所有已注册指令'
+      Command-Info: '§7 * §e/bpmp ci <指令名> §7- §b获取指令信息'
+      Command-Remove: '§7 * §e/bpmp cr <指令名> §7- §b移除指令'
       Footer: '&7&m-----------------------------------------'
+    Info:
+      Plugin-Not-Found: '§c找不到指定的插件.'
+      Plugin-Name: '§a插件名称§f: %0%'
+      Plugin-Version: '§a插件版本§f: %0%'
+      Plugin-Author: '§a插件作者§f: %0%'
+      Plugin-Description: '§a插件简述§f: %0%'
+      Plugin-Depends: '§a插件依赖§f: %0%'
+      Plugin-Soft-Depends: '§a插件软依赖§f: %0%'
+      Plugin-Libraries: '§a插件使用库§f: %0%'
+      Plugin-Commands: '§a插件指令§f: %0%'
+      Plugin-File: '§a插件文件路径§f: %0%'
     List:
       Message-Format: '§f插件列表 §7(%0%§7)'
     Load:
@@ -30,8 +48,40 @@ Sender:
       Success-Main-Message: '&a重载插件成功.'
       Failed-Main-Message: '&c重载插件失败.'
       Success-Reloaded-Plugin: '§a成功重载插件 §f%0% §a.'
+    Enable:
+      Success-Main-Message: '&a启用插件成功.'
+      Failed-Main-Message: '&c启用插件失败.'
+      Plugin-Not-Found: '§c找不到指定的已禁用的插件.'
+      Success-Enabled-Plugin: '§a成功启用并加载插件 §f%0% §a.'
+    Disable:
+      Success-Main-Message: '&a禁用插件成功.'
+      Failed-Main-Message: '&c禁用插件失败.'
+      Success-Disabled-Plugin: '§a成功卸载并禁用插件 §f%0% §a.'
+    Update:
+      Success-Main-Message: '&a更新插件成功.'
+      Failed-Main-Message: '&c更新插件失败.'
+      Reverted-Old-Version: ' 恢复更改中.'
+      Plugin-Not-Found: '§c找不到指定的插件, 请检查其是否已经加载.'
+      Update-Not-Found: '§c在插件文件夹内找不到具有不同版本的插件.'
+      Success-Updated-Plugin: '§a成功更新插件 §f%0% §7(%1% -> %2%)§a.'
+    Command-List:
+      Message-Format: '§f指令列表 §7(%0%§7)'
+    Command-Info:
+      Command-Not-Found: '§c找不到指定的指令.'
+      Command-Name: '§a指令名称§f: %0%'
+      Command-Permission: '§a指令权限§f: %0%'
+      Command-Aliases: '§a指令别名§f: %0%'
+      Command-Plugin: '§a注册插件§f: %0%'
+    Command-Remove:
+      Success-Main-Message: '&a移除指令成功.'
+      Failed-Main-Message: '&c移除指令失败.'
+      Command-Not-Found: '§c找不到指定的指令.'
+      Success-Removed-Command: '§a成功移除指令 §f%0% §a.'
 
 Console-Sender:
+  Rename-File:
+    Windows-Warning: '§c在 Windows 系统上, 由于文件锁限制, disable 和 update 指令可能不会正常运作. 请慎重使用.'
+    Failed-To-Rename: '§c无法重命名文件: §f%0%'
   Updater:
     Error-Checking-Version-Connection: '§c无法连接至远程服务器检查版本信息, 请尝试更新您的插件: %0%'
     Error-Parsing-Json: '§c无法正常解析版本信息 Json, 请更新您的插件至最新版本: %0%'
