@@ -11,7 +11,9 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Updater
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands.CommandHandler
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import net.md_5.bungee.api.plugin.Plugin
+import org.bstats.bungeecord.Metrics
 import java.io.File
+
 
 class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
 
@@ -45,6 +47,7 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
         proxy.pluginManager.registerCommand(this, CommandHandler)
         Updater.start()
         info(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Windows-Warning"))
+        Metrics(this, 13875)
     }
 
     override fun getPlugins(): Array<ProxyPlugin> {

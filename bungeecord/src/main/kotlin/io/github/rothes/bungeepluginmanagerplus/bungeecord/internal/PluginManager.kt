@@ -145,10 +145,10 @@ object PluginManager {
 
     internal fun enablePlugin(plugin: String): HandleResult {
         val folder = ProxyServer.getInstance().pluginsFolder
-        val found = folder.listFiles()?.firstOrNull {
+        val found = listFiles(folder).firstOrNull {
             it.name.endsWith(".disabled", true) && it.nameWithoutExtension.contentEquals(plugin, true)
         // Also in modules folder
-        } ?: File(folder.parentFile, "modules").listFiles()?.firstOrNull {
+        } ?: listFiles(File(folder.parentFile, "modules")).firstOrNull {
             it.name.endsWith(".disabled", true) && it.nameWithoutExtension.contentEquals(plugin, true)
         } ?: return HandleResultImpl.create(Action.PLUGIN_ENABLE, false
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Enable.Plugin-Not-Found"), null)
@@ -181,7 +181,7 @@ object PluginManager {
             it.description.name.equals(plugin, true)
         } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Plugin-Not-Found"), null)
-        val update = instance.file.parentFile.listFiles()?.firstOrNull {
+        val update = listFiles(instance.file.parentFile).firstOrNull {
             if (isPluginJar(it)) {
                 val des = getPluginDesYaml(it)
                 return@firstOrNull des != null && des.version != instance.description.version && des.name == instance.description.name
@@ -252,16 +252,16 @@ object PluginManager {
         val folder = ProxyServer.getInstance().pluginsFolder
         if (folder.exists()) {
             // First search for plugin description equals.
-            result = folder.listFiles()?.firstOrNull {
+            result = listFiles(folder).firstOrNull {
                 isDesNameEquals(it, plugin)
             // If not found, then search for plugin description contains.
-            } ?: folder.listFiles()?.firstOrNull {
+            } ?: listFiles(folder).firstOrNull {
                 isDesNameContains(it, plugin)
             // If not found, finally, search for file name contains.
-            } ?: folder.listFiles()?.firstOrNull {
+            } ?: listFiles(folder).firstOrNull {
                 isFileNameContains(it, plugin)
             // Or it's a module.
-            } ?: File(folder.parentFile, "modules").listFiles()?.firstOrNull {
+            } ?: listFiles(File(folder.parentFile, "modules")).firstOrNull {
                 isDesNameEquals(it, plugin)
             }
         }
@@ -363,6 +363,10 @@ object PluginManager {
             warn(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Failed-To-Rename", e.toString()))
             false
         }
+    }
+
+    private fun listFiles(folder: File): Array<out File> {
+        return folder.listFiles()!!.sortedArrayWith(Comparator.comparingLong(File::lastModified).reversed())
     }
 
 }
