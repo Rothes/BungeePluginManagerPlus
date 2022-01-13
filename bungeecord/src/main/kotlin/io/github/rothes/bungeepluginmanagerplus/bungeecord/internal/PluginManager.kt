@@ -4,24 +4,43 @@ import com.google.common.collect.Multimap
 import io.github.rothes.bungeepluginmanagerplus.api.Action
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyCommand
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventHandler
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventListener
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.HandleResultImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyCommandImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventHandlerImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventListenerImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyPluginImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.events.EventFactory
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Command
+import net.md_5.bungee.api.plugin.Event
+import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.PluginDescription
+import net.md_5.bungee.event.EventBus
+import net.md_5.bungee.event.EventHandlerMethod
 import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.constructor.Constructor
 import java.io.File
 import java.lang.reflect.Method
 import java.nio.file.Files
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
-import kotlin.collections.HashMap
 import net.md_5.bungee.api.plugin.PluginManager as BungeePluginManager
 
 object PluginManager {
+
+    private val yaml: Yaml by lazy {
+        val yamlConstructor = Constructor()
+        val propertyUtils = yamlConstructor.propertyUtils
+        propertyUtils.isSkipMissingProperties = true
+        yamlConstructor.propertyUtils = propertyUtils
+        Yaml(yamlConstructor)
+    }
 
     @Suppress("UNCHECKED_CAST")
     private val bcPlugins: MutableMap<String, Plugin> by lazy {
@@ -52,6 +71,28 @@ object PluginManager {
         field.isAccessible = true
         field.get(ProxyServer.getInstance().pluginManager) as MutableMap<String, Command>
     }
+    @Suppress("UNCHECKED_CAST")
+    private val bcListenersPlugin: Multimap<Plugin, Listener> by lazy {
+        val field = BungeePluginManager::class.java.getDeclaredField("listenersByPlugin")
+        field.isAccessible = true
+        field.get(ProxyServer.getInstance().pluginManager) as Multimap<Plugin, Listener>
+    }
+    @Suppress("UNCHECKED_CAST")
+    private val bcListenerPriority: MutableMap<Class<*>, Map<Byte, Map<Any, Array<Method>>>> by lazy {
+        val managerField = BungeePluginManager::class.java.getDeclaredField("eventBus")
+        managerField.isAccessible = true
+        val busField = EventBus::class.java.getDeclaredField("byListenerAndPriority")
+        busField.isAccessible = true
+        busField.get(managerField[ProxyServer.getInstance().pluginManager]) as MutableMap<Class<*>, Map<Byte, Map<Any, Array<Method>>>>
+    }
+    @Suppress("UNCHECKED_CAST")
+    private val bcEventBaked: ConcurrentHashMap<Class<*>, Array<EventHandlerMethod>> by lazy {
+        val managerField = BungeePluginManager::class.java.getDeclaredField("eventBus")
+        managerField.isAccessible = true
+        val busField = EventBus::class.java.getDeclaredField("byEventBaked")
+        busField.isAccessible = true
+        busField.get(managerField[ProxyServer.getInstance().pluginManager]) as ConcurrentHashMap<Class<*>, Array<EventHandlerMethod>>
+    }
     private val enablePluginMethod: Method by lazy {
         val method = BungeePluginManager::class.java.getDeclaredMethod("enablePlugin",
             Map::class.java, Stack::class.java, PluginDescription::class.java)
@@ -71,14 +112,18 @@ object PluginManager {
         }.toTypedArray()
     }
 
-    internal fun loadPlugin(plugin: String): HandleResult {
+    internal fun loadPlugin(plugin: String, action: Action = Action.PLUGIN_LOAD, eventId: Short = -1): HandleResult {
         val file = searchPlugin(plugin) ?: return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Not-Found"), null)
 
-        return loadPlugin(file)
+        return loadPlugin(file, action)
     }
 
-    internal fun loadPlugin(plugin: File): HandleResult {
+    internal fun loadPlugin(plugin: File, action: Action = Action.PLUGIN_LOAD, eventId: Short = -1): HandleResult {
+        if (!plugin.exists()) {
+            return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Invalid-File", plugin.name), null)
+        }
         val pluginDes = getPluginDesYaml(plugin) ?: return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Invalid-Plugin-Description"), null)
         for (depend in pluginDes.depends) {
@@ -88,6 +133,14 @@ object PluginManager {
         }
         if (bcPlugins.containsKey(pluginDes.name)) return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Already-Loaded"), ProxyPluginImpl.create(bcPlugins[pluginDes.name]!!))
+
+        val event = EventFactory.createPluginLoadEvent(action, pluginDes.name, plugin, if (eventId < 0) EventFactory.nextId() else eventId)
+        ProxyServer.getInstance().pluginManager.callEvent(event)
+        if (event.isCancelled)
+            return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Event-Cancelled",
+                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                null)
 
         return try {
             val success = enablePluginMethod.invoke(ProxyServer.getInstance().pluginManager,
@@ -110,10 +163,18 @@ object PluginManager {
         }
     }
 
-    internal fun unloadPlugin(plugin: String): HandleResult {
+    internal fun unloadPlugin(plugin: String, action: Action = Action.PLUGIN_UNLOAD, eventId: Short = -1): HandleResult {
         val instance = bcPlugins[plugin] ?: bcPlugins[bcPlugins.keys.firstOrNull { it.equals(plugin, true) }
         ] ?: return HandleResultImpl.create(Action.PLUGIN_UNLOAD, false,
             I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Plugin-Not-Exist", plugin), null)
+
+        val event = EventFactory.createPluginUnloadEvent(action, ProxyPluginImpl.create(instance), if (eventId < 0) EventFactory.nextId() else eventId)
+        ProxyServer.getInstance().pluginManager.callEvent(event)
+        if (event.isCancelled)
+            return HandleResultImpl.create(Action.PLUGIN_UNLOAD, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Event-Cancelled",
+                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                ProxyPluginImpl.create(instance))
 
         return try {
             ProxyServer.getInstance().pluginManager.unregisterCommands(instance)
@@ -133,10 +194,11 @@ object PluginManager {
     }
 
     internal fun reloadPlugin(plugin: String): HandleResult {
-        val unload = unloadPlugin(plugin)
+        val eventId = EventFactory.nextId()
+        val unload = unloadPlugin(plugin, Action.PLUGIN_RELOAD, eventId)
         if (!unload.success)
             return HandleResultImpl.create(Action.PLUGIN_RELOAD, false, unload.message, unload.plugin)
-        val load = loadPlugin(plugin)
+        val load = loadPlugin((unload.plugin!!.handle as Plugin).description.file, Action.PLUGIN_RELOAD, eventId)
         if (!load.success)
             return HandleResultImpl.create(Action.PLUGIN_RELOAD, false, load.message, load.plugin)
         return HandleResultImpl.create(Action.PLUGIN_RELOAD, true,
@@ -153,7 +215,7 @@ object PluginManager {
         } ?: return HandleResultImpl.create(Action.PLUGIN_ENABLE, false
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Enable.Plugin-Not-Found"), null)
 
-        val load = loadPlugin(enableFile(found))
+        val load = loadPlugin(enableFile(found), Action.PLUGIN_ENABLE)
         if (load.success)
             found.renameTo(File(found.parentFile, "${found.nameWithoutExtension}.jar"))
         return HandleResultImpl.create(Action.PLUGIN_ENABLE, load.success, if (load.success)
@@ -163,7 +225,7 @@ object PluginManager {
     }
 
     internal fun disablePlugin(plugin: String): HandleResult {
-        val unload = unloadPlugin(plugin)
+        val unload = unloadPlugin(plugin, Action.PLUGIN_DISABLE)
         return if (unload.success) {
             val file = (unload.plugin!!.handle as Plugin).description.file
             disableFile(file)
@@ -191,14 +253,15 @@ object PluginManager {
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Update-Not-Found")
             , ProxyPluginImpl.create(instance))
 
+        val eventId = EventFactory.nextId()
         val oldFile = instance.description.file
-        val unload = unloadPlugin(instance.description.name)
+        val unload = unloadPlugin(instance.description.name, Action.PLUGIN_UPDATE, eventId)
         if (!unload.success) {
             return HandleResultImpl.create(Action.PLUGIN_UPDATE, false, unload.message
                 , ProxyPluginImpl.create(instance))
         }
 
-        val load = loadPlugin(update)
+        val load = loadPlugin(update, Action.PLUGIN_UPDATE, eventId)
         if (!load.success) {
             return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
                 , load.message + I18nHelper.getLocaleMessage("Sender.Commands.Update.Reverted-Old-Version")
@@ -236,6 +299,14 @@ object PluginManager {
     }
 
     internal fun removeCommand(command: ProxyCommand): HandleResult {
+        val event = EventFactory.createPluginCommandRemoveEvent(command)
+        ProxyServer.getInstance().pluginManager.callEvent(event)
+        if (event.isCancelled)
+            return HandleResultImpl.create(Action.COMMAND_REMOVE, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Event-Cancelled",
+                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                command.plugin)
+
         bcCommandsPlugin[command.plugin.handle as Plugin].remove(command.handle)
         bcCommandsString.remove(command.name.lowercase(Locale.ROOT))
         for (alias in command.aliases) {
@@ -245,6 +316,82 @@ object PluginManager {
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Success-Removed-Command", command.name)
             , command.plugin)
     }
+
+    internal fun getEventListenersAll(): Array<ProxyEventListener> {
+        val result = mutableListOf<ProxyEventListener>()
+        for ((plugin, listener) in bcListenersPlugin.entries()) {
+            result.add(ProxyEventListenerImpl.create(listener, ProxyPluginImpl.create(plugin)))
+        }
+        return result.toTypedArray()
+    }
+
+    internal fun getEventListenersByPlugin(plugin: ProxyPlugin): Array<ProxyEventListener> {
+        return getEventListenersAll().filter { it.plugin.handle === plugin.handle }.toTypedArray()
+    }
+
+    internal fun removeEventListener(listener: ProxyEventListener): HandleResult {
+        val event = EventFactory.createPluginEventListenerRemoveEvent(listener)
+        ProxyServer.getInstance().pluginManager.callEvent(event)
+        if (event.isCancelled)
+            return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Event-Cancelled",
+                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                listener.plugin)
+
+        ProxyServer.getInstance().pluginManager.unregisterListener(listener.handle as Listener)
+        return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, true
+            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Success-Removed-Event-Listener")
+            , listener.plugin)
+    }
+
+    internal fun getEventHandlersAll(): Array<ProxyEventHandler> {
+        val result = mutableListOf<ProxyEventHandler>()
+        for (eventAndMethods in bcEventBaked) {
+            @Suppress("UNCHECKED_CAST")
+            val eventClass = eventAndMethods.key as Class<out Event>
+            for (method in eventAndMethods.value) {
+                val pluginHandler: Plugin = bcListenersPlugin.entries().first { it.value === method.listener }.key
+                result.add(ProxyEventHandlerImpl.create(
+                    ProxyEventImpl.create(eventClass),
+                    ProxyPluginImpl.create(pluginHandler),
+                    method))
+            }
+
+        }
+        return result.toTypedArray()
+    }
+
+    internal fun getEventHandlersByPlugin(plugin: ProxyPlugin): Array<ProxyEventHandler> {
+        return getEventHandlersAll().filter { it.plugin.handle === plugin.handle }.toTypedArray()
+    }
+
+    internal fun getEventHandlersByListener(listener: ProxyEventListener): Array<ProxyEventHandler> {
+        return getEventHandlersAll().filter { it.method.declaringClass === listener.clazz }.toTypedArray()
+    }
+
+    internal fun removeEventHandler(handler: ProxyEventHandler): HandleResult {
+        val event = EventFactory.createPluginEventHandlerRemoveEvent(handler)
+        ProxyServer.getInstance().pluginManager.callEvent(event)
+        if (event.isCancelled)
+            return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, false,
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Event-Cancelled",
+                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                handler.plugin)
+
+        bcEventBaked[handler.event.clazz] = bcEventBaked[handler.event.clazz]!!.filterNot { it === handler.handle }.toTypedArray()
+
+        for (v1 in bcListenerPriority.values) {
+            for (v2 in v1.values) {
+                for (listener in v2.keys) {
+                    (v2 as MutableMap)[listener] = v2[listener]!!.filterNot { it === handler.method }.toTypedArray()
+                }
+            }
+        }
+        return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, true
+            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Success-Removed-Event-Handler")
+            , handler.plugin)
+    }
+
 
     private fun searchPlugin(plugin: String) : File? {
         var result : File? = null
@@ -278,7 +425,7 @@ object PluginManager {
         val pluginDesFile = jar.getJarEntry("bungee.yml") ?: jar.getJarEntry("plugin.yml")
         ?: return null
 
-        val result = Yaml().loadAs(jar.getInputStream(pluginDesFile), PluginDescription::class.java)
+        val result = yaml.loadAs(jar.getInputStream(pluginDesFile), PluginDescription::class.java)
         if (result.file == null)
             result.file = pluginJar
         return result

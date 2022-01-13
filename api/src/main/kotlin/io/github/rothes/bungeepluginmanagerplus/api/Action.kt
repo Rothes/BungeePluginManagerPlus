@@ -36,6 +36,16 @@ enum class Action {
         override fun getMainMessageNode(success: Boolean): String {
             return if (success) "Sender.Commands.Command-Remove.Success-Main-Message" else "Sender.Commands.Command-Remove.Failed-Main-Message"
         }
+    },
+    EVENT_LISTENER_REMOVE {
+        override fun getMainMessageNode(success: Boolean): String {
+            return if (success) "Sender.Commands.Event-Listener-Remove.Success-Main-Message" else "Sender.Commands.Event-Listener-Remove.Failed-Main-Message"
+        }
+    },
+    EVENT_HANDLER_REMOVE {
+        override fun getMainMessageNode(success: Boolean): String {
+            return if (success) "Sender.Commands.Event-Handler-Remove.Success-Main-Message" else "Sender.Commands.Event-Handler-Remove.Failed-Main-Message"
+        }
     };
 
     abstract fun getMainMessageNode(success: Boolean) : String

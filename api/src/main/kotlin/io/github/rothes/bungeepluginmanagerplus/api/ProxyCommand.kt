@@ -6,7 +6,7 @@ interface ProxyCommand {
     val permission: String?
     val aliases: Array<String>
     val permissionMessage: String?
-    val handle: Any
     val plugin: ProxyPlugin
+    val handle: Any
 
 }

@@ -9,18 +9,18 @@ class ProxyCommandImpl private constructor(
     override val permission: String?,
     override val aliases: Array<String>,
     override val permissionMessage: String?,
+    override val plugin: ProxyPlugin,
     override val handle: Any,
-    override val plugin: ProxyPlugin
 ) : ProxyCommand {
+
+    override fun toString(): String {
+        return "ProxyCommandImpl{name=$name, permission=$permission, aliases=$aliases, permissionMessage=$permissionMessage, plugin=$plugin}, handle=$handle}"
+    }
 
     companion object Factory {
 
-        @JvmStatic
-        fun create (
-            handle: Command,
-            plugin: ProxyPlugin
-        ): ProxyCommandImpl {
-            return ProxyCommandImpl(handle.name, handle.permission, handle.aliases, handle.permissionMessage, handle, plugin)
+        fun create (handle: Command, plugin: ProxyPlugin): ProxyCommandImpl {
+            return ProxyCommandImpl(handle.name, handle.permission, handle.aliases, handle.permissionMessage, plugin, handle)
         }
 
     }

@@ -1,6 +1,10 @@
 Sender:
   Prefix: '&6&lBPM&3&l+ &e> '
   No-Permission: '§c您没有权限这么做.'
+  Event:
+    Cancelled-Reasons:
+      Default-Reason: '未知原因.'
+      Cannot-Unload-Bpmp: '不可卸载 BungeePluginManagerPlus 插件.'
   Commands:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
@@ -12,10 +16,18 @@ Sender:
       Enable: '§7 * §e/bpmp enable <插件名> §7- §b启用插件'
       Disable: '§7 * §e/bpmp disable <插件名> §7- §b禁用插件'
       Update: '§7 * §e/bpmp update <插件名> §7- §b更新插件'
-      Command-List: '§7 * §e/bpmp cl §7- §b列出所有已注册指令'
-      Command-Info: '§7 * §e/bpmp ci <指令名> §7- §b获取指令信息'
-      Command-Remove: '§7 * §e/bpmp cr <指令名> §7- §b移除指令'
+      Command-List: '§7 * §e/bpmp CommandList§8(cl)§e §7- §b列出所有已注册指令'
+      Command-Info: '§7 * §e/bpmp CommandInfo§8(ci)§e <指令名> §7- §b获取指令信息'
+      Command-Remove: '§7 * §e/bpmp CommandRemove§8(cr)§e <指令名> §7- §b移除指令'
+      Event-Listener-List: '§7 * §e/bpmp EventListenerList§8(ell)§e §7- §b列出所有事件监听器'
+      Event-Listener-Info: '§7 * §e/bpmp EventListenerInfo§8(eli)§e <类名> §7- §b获取事件监听器信息'
+      Event-Listener-Remove: '§7 * §e/bpmp EventListenerRemove§8(elr)§e <类名> §7- §b移除事件监听器'
+      Event-Handler-List: '§7 * §e/bpmp EventHandlerList§8(ehl)§e §7- §b列出所有事件监听器方法'
+      Event-Handler-Info: '§7 * §e/bpmp EventHandlerInfo§8(ehi)§e <类名> <方法名> §7- §b获取事件监听器方法信息'
+      Event-Handler-Remove: '§7 * §e/bpmp EventHandlerRemove§8(ehr)§e <类名> <方法名> §7- §b移除事件监听器方法'
       Footer: '&7&m-----------------------------------------'
+      Next-Page: '§7     §3使用 §e/bpmp help %0% §3查看下一页'
+      Page-Exceeded: '§7        §c页码溢出! 最多仅有 %0% 页.'
     Info:
       Plugin-Not-Found: '§c找不到指定的插件.'
       Plugin-Name: '§a插件名称§f: %0%'
@@ -26,21 +38,26 @@ Sender:
       Plugin-Soft-Depends: '§a插件软依赖§f: %0%'
       Plugin-Libraries: '§a插件使用库§f: %0%'
       Plugin-Commands: '§a插件指令§f: %0%'
+      Plugin-Event-Listeners: '§a插件事件监听器§f: %0%'
+      Plugin-Event-Handlers: '§a插件事件监听器方法§f: %0%'
       Plugin-File: '§a插件文件路径§f: %0%'
     List:
       Message-Format: '§f插件列表 §7(%0%§7)'
     Load:
       Success-Main-Message: '&a加载插件成功.'
       Failed-Main-Message: '&c加载插件失败.'
+      Event-Cancelled: '§c插件加载事件被取消. 原因: §f%0%'
       Plugin-Not-Found: '§c找不到指定的插件.'
       Invalid-Plugin-Description: '§c无法加载, 插件信息文件无效.'
       Missing-Dependency: '§c无法加载, 缺少前置插件: §f%0% §c.'
       Plugin-Already-Loaded: '§c该插件已经加载了, 不可重复加载.'
       Success-Loaded-Plugin: '§a成功加载插件 §f%0% §a.'
       Failed-Loading-Plugin: '§c加载插件 §f%0% §c时发生错误.'
+      Invalid-File: '§c无效的插件文件: §f%0% §c.'
     Unload:
       Success-Main-Message: '&a卸载插件成功.'
       Failed-Main-Message: '&c卸载插件失败.'
+      Event-Cancelled: '§c插件卸载事件被取消. 原因: §f%0%'
       Plugin-Not-Exist: '§c不存在此插件 §f%0% §c.'
       Success-Unloaded-Plugin: '§a成功卸载插件 §f%0% §a.'
       Failed-Unloading-Plugin: '§c卸载插件 §f%0% §c时发生错误.'
@@ -75,12 +92,41 @@ Sender:
     Command-Remove:
       Success-Main-Message: '&a移除指令成功.'
       Failed-Main-Message: '&c移除指令失败.'
+      Event-Cancelled: '§c指令移除事件被取消. 原因: §f%0%'
       Command-Not-Found: '§c找不到指定的指令.'
       Success-Removed-Command: '§a成功移除指令 §f%0% §a.'
+    Event-Listener-List:
+      Message-Format: '§f事件监听器列表 §7(%0%§7)'
+    Event-Listener-Info:
+      Event-Listener-Not-Found: '§c找不到指定的事件监听器.'
+      Event-Listener-Class: '§a监听器类名§f: %0%'
+      Event-Listener-Handlers: '§a监听器方法§f: %0%'
+      Event-Listener-Plugin: '§a注册插件§f: %0%'
+    Event-Listener-Remove:
+      Success-Main-Message: '&a移除事件监听器成功.'
+      Failed-Main-Message: '&c移除事件监听器失败.'
+      Event-Cancelled: '§c事件监听器移除事件被取消. 原因: §f%0%'
+      Event-Listener-Not-Found: '§c找不到指定的事件监听器.'
+      Success-Removed-Event-Listener: '§a成功移除事件监听器.'
+    Event-Handler-List:
+      Message-Format: '§f事件监听器方法列表 §7(%0%§7)'
+    Event-Handler-Info:
+      Event-Handler-Not-Found: '§c找不到指定的事件监听器方法.'
+      Event-Handler-Event: '§a监听事件§f: %0%'
+      Event-Handler-Priority: '§a监听器优先级§f: %0%'
+      Event-Handler-Class: '§a监听器类名§f: %0%'
+      Event-Handler-Method: '§a监听器方法名§f: %0%'
+      Event-Handler-Plugin: '§a注册插件§f: %0%'
+    Event-Handler-Remove:
+      Success-Main-Message: '&a移除事件监听器方法成功.'
+      Failed-Main-Message: '&c移除事件监听器方法失败.'
+      Event-Cancelled: '§c事件监听器方法移除事件被取消. 原因: §f%0%'
+      Event-Handler-Not-Found: '§c找不到指定的事件监听器方法.'
+      Success-Removed-Event-Handler: '§a成功移除事件监听器方法.'
 
 Console-Sender:
   Rename-File:
-    Windows-Warning: '§c在 Windows 系统上, 由于文件锁限制, disable 和 update 指令可能不会正常运作. 请慎重使用.'
+    Windows-Warning: '§c在 Windows 系统上, 由于文件锁限制, Disable 和 Update 指令可能不会正常运作. 请慎重使用.'
     Failed-To-Rename: '§c无法重命名文件: §f%0%'
   Updater:
     Error-Checking-Version-Connection: '§c无法连接至远程服务器检查版本信息, 请尝试更新您的插件: %0%'

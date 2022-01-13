@@ -3,9 +3,12 @@ package io.github.rothes.bungeepluginmanagerplus.bungeecord
 import io.github.rothes.bungeepluginmanagerplus.api.BungeePluginManagerPlusAPI
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyCommand
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventHandler
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventListener
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.BungeeCordDisguiseLogger
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Listeners
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.Updater
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands.CommandHandler
@@ -13,7 +16,6 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import net.md_5.bungee.api.plugin.Plugin
 import org.bstats.bungeecord.Metrics
 import java.io.File
-
 
 class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
 
@@ -45,6 +47,7 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
     override fun onEnable() {
         I18nHelper.init()
         proxy.pluginManager.registerCommand(this, CommandHandler)
+        proxy.pluginManager.registerListener(this, Listeners)
         Updater.start()
         info(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Windows-Warning"))
         Metrics(this, 13875)
@@ -96,6 +99,34 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
 
     override fun removeCommand(command: ProxyCommand): HandleResult {
         return PluginManager.removeCommand(command)
+    }
+
+    override fun getEventListenersAll(): Array<ProxyEventListener> {
+        return PluginManager.getEventListenersAll()
+    }
+
+    override fun getEventListenersByPlugin(plugin: ProxyPlugin): Array<ProxyEventListener> {
+        return PluginManager.getEventListenersByPlugin(plugin)
+    }
+
+    override fun removeEventListener(listener: ProxyEventListener): HandleResult {
+        return PluginManager.removeEventListener(listener)
+    }
+
+    override fun getEventHandlersAll(): Array<ProxyEventHandler> {
+        return PluginManager.getEventHandlersAll()
+    }
+
+    override fun getEventHandlersByPlugin(plugin: ProxyPlugin): Array<ProxyEventHandler> {
+        return PluginManager.getEventHandlersByPlugin(plugin)
+    }
+
+    override fun getEventHandlersByListener(listener: ProxyEventListener): Array<ProxyEventHandler> {
+        return PluginManager.getEventHandlersByListener(listener)
+    }
+
+    override fun removeEventHandler(handler: ProxyEventHandler): HandleResult {
+        return PluginManager.removeEventHandler(handler)
     }
 
     companion object {

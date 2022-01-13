@@ -16,5 +16,12 @@ interface BungeePluginManagerPlusAPI {
     fun getCommandsByPlugin(plugin: ProxyPlugin): Array<ProxyCommand>
     fun getCommandsAll(): Array<ProxyCommand>
     fun removeCommand(command: ProxyCommand): HandleResult
+    fun getEventListenersAll(): Array<ProxyEventListener>
+    fun getEventListenersByPlugin(plugin: ProxyPlugin): Array<ProxyEventListener>
+    fun removeEventListener(listener: ProxyEventListener): HandleResult
+    fun getEventHandlersAll(): Array<ProxyEventHandler>
+    fun getEventHandlersByPlugin(plugin: ProxyPlugin): Array<ProxyEventHandler>
+    fun getEventHandlersByListener(listener: ProxyEventListener): Array<ProxyEventHandler>
+    fun removeEventHandler(handler: ProxyEventHandler): HandleResult
 
 }

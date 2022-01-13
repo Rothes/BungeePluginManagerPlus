@@ -1,6 +1,10 @@
 Sender:
   Prefix: '&6&lBPM&3&l+ &e> '
   No-Permission: '§cYou don''t have the permission to do that.'
+  Event:
+    Cancelled-Reasons:
+      Default-Reason: 'Unknown reason.'
+      Cannot-Unload-Bpmp: 'BungeePluginManagerPlus cannot be unloaded.'
   Commands:
     Help:
       Header: '&7&m------&7&l &7[ &6&lBungeePluginManager§3§l+&7 ]&l &7&m------'
@@ -12,10 +16,18 @@ Sender:
       Enable: '§7 * §e/bpmp enable <Plugin> §7- §bEnable the plugin'
       Disable: '§7 * §e/bpmp disable <Plugin> §7- §bDisable the plugin'
       Update: '§7 * §e/bpmp update <Plugin> §7- §bUpdate the plugin'
-      Command-List: '§7 * §e/bpmp cl §7- §bList registered commands'
-      Command-Info: '§7 * §e/bpmp ci <Command> §7- §bShow command info'
-      Command-Remove: '§7 * §e/bpmp cr <Command> §7- §bRemove the command'
+      Command-List: '§7 * §e/bpmp CommandList§8(cl)§e §7- §bList registered commands'
+      Command-Info: '§7 * §e/bpmp CommandInfo§8(ci)§e <Command> §7- §bShow command info'
+      Command-Remove: '§7 * §e/bpmp CommandRemove§8(cr)§e <Command> §7- §bRemove the command'
+      Event-Listener-List: '§7 * §e/bpmp EventListenerList§8(ell)§e §7- §bList registered event listeners'
+      Event-Listener-Info: '§7 * §e/bpmp EventListenerInfo§8(eli)§e <Class> §7- §bShow event listener info'
+      Event-Listener-Remove: '§7 * §e/bpmp EventListenerRemove§8(elr)§e <Class> §7- §bRemove event listener'
+      Event-Handler-List: '§7 * §e/bpmp EventHandlerList§8(ehl)§e §7- §bList registered event listener methods'
+      Event-Handler-Info: '§7 * §e/bpmp EventHandlerInfo§8(ehi)§e <Class> <Method> §7- §bShow listener method info'
+      Event-Handler-Remove: '§7 * §e/bpmp EventHandlerRemove§8(ehr)§e <Class> <Method> §7- §bRemove listener method'
       Footer: '&7&m-----------------------------------------'
+      Next-Page: '§7    §3Use §e/bpmp help %0% §3to next page'
+      Page-Exceeded: '§7      §cPage exceeded! Max is %0% .'
     Info:
       Plugin-Not-Found: '§cThe specified plugin could not be found.'
       Plugin-Name: '§aName§f: %0%'
@@ -26,39 +38,44 @@ Sender:
       Plugin-Soft-Depends: '§aSoft Depends§f: %0%'
       Plugin-Libraries: '§aLibraries§f: %0%'
       Plugin-Commands: '§aCommands§f: %0%'
+      Plugin-Event-Listeners: '§aEvent listeners§f: %0%'
+      Plugin-Event-Handlers: '§aEvent listener methods§f: %0%'
       Plugin-File: '§aFile Path§f: %0%'
     List:
       Message-Format: '§fPlugins §7(%0%§7)'
     Load:
-      Success-Main-Message: '&aSuccessfully loading the plugin.'
+      Success-Main-Message: '&aSuccessfully loaded the plugin.'
       Failed-Main-Message: '&cFailed to load the plugin.'
+      Event-Cancelled: '§cPluginLoad event was cancelled. Reason: §f%0%'
       Plugin-Not-Found: '§cThe specified plugin could not be found.'
       Invalid-Plugin-Description: '§cUnable to load, the plugin description file is invalid.'
       Missing-Dependency: '§cUnable to load, missing depend plugin: §f%0% §c.'
       Plugin-Already-Loaded: '§cThis plugin is already loaded.'
       Success-Loaded-Plugin: '§aSuccessfully loaded the plugin §f%0% §a.'
       Failed-Loading-Plugin: '§cFailed to load the plugin §f%0% §c.'
+      Invalid-File: '§cInvalid plugin file: §f%0% §c.'
     Unload:
-      Success-Main-Message: '&aSuccessfully unloading the plugin.'
+      Success-Main-Message: '&aSuccessfully unloaded the plugin.'
       Failed-Main-Message: '&cFailed to unload the plugin.'
-      Plugin-Not-Exist: '§cServer doesn't exist the plugin §f%0% §c.'
+      Event-Cancelled: '§cPluginUnload event was cancelled. Reason: §f%0%'
+      Plugin-Not-Exist: '§cServer doesn''t exist the plugin §f%0% §c.'
       Success-Unloaded-Plugin: '§aSuccessfully unloaded the plugin §f%0% §a.'
       Failed-Unloading-Plugin: '§cFailed to unload the plugin §f%0% §c.'
     Reload:
-      Success-Main-Message: '&aSuccessfully reloading the plugin.'
+      Success-Main-Message: '&aSuccessfully reloaded the plugin.'
       Failed-Main-Message: '&cFailed to reload the plugin.'
       Success-Reloaded-Plugin: '§aSuccessfully reloaded the plugin §f%0% §a.'
     Enable:
-      Success-Main-Message: '&aSuccessfully enabling the plugin.'
+      Success-Main-Message: '&aSuccessfully enabled the plugin.'
       Failed-Main-Message: '&cFailed to enable the plugin.'
       Plugin-Not-Found: '§cThe specified ''.disabled'' plugin could not be found.'
       Success-Reloaded-Plugin: '§aSuccessfully enabled and loaded the plugin §f%0% §a.'
     Disable:
-      Success-Main-Message: '&aSuccessfully disabling the plugin.'
+      Success-Main-Message: '&aSuccessfully disabled the plugin.'
       Failed-Main-Message: '&cFailed to disable the plugin.'
       Success-Reloaded-Plugin: '§aSuccessfully unloaded and disabled the plugin §f%0% §a.'
     Update:
-      Success-Main-Message: '&aSuccessfully updating the plugin.'
+      Success-Main-Message: '&aSuccessfully updated the plugin.'
       Failed-Main-Message: '&cFailed to update the plugin.'
       Reverted-Old-Version: ' Reverting.'
       Plugin-Not-Found: '§cThe specified plugin could not be found. Is it already loaded?'
@@ -75,12 +92,41 @@ Sender:
     Command-Remove:
       Success-Main-Message: '&aSuccessfully removed the command.'
       Failed-Main-Message: '&cFailed to remove the command.'
+      Event-Cancelled: '§cPluginCommandRemove event was cancelled. Reason: §f%0%'
       Command-Not-Found: '§cThe specified command could not be found.'
       Success-Removed-Command: '§aSuccessfully removed command §f%0% §a.'
+    Event-Listener-List:
+      Message-Format: '§fEvent listeners §7(%0%§7)'
+    Event-Listener-Info:
+      Event-Listener-Not-Found: '§cThe specified listener could not be found.'
+      Event-Listener-Class: '§aClass Name§f: %0%'
+      Event-Listener-Handlers: '§aHandlers(methods)§f: %0%'
+      Event-Listener-Plugin: '§aRegistered Plugin§f: %0%'
+    Event-Listener-Remove:
+      Success-Main-Message: '&aSuccessfully removed the event listener.'
+      Failed-Main-Message: '&cFailed to remove the event listener.'
+      Event-Cancelled: '§cPluginEventListenerRemove event was cancelled. Reason: §f%0%'
+      Event-Listener-Not-Found: '§cThe specified listener could not be found.'
+      Success-Removed-Event-Listener: '§aSuccessfully removed the event listener.'
+    Event-Handler-List:
+      Message-Format: '§fEvent Handlers §7(%0%§7)'
+    Event-Handler-Info:
+      Event-Handler-Not-Found: '§cThe specified handler(method) could not be found.'
+      Event-Handler-Event: '§aListening Event§f: %0%'
+      Event-Handler-Priority: '§aHandler Priority§f: %0%'
+      Event-Handler-Class: '§aClass Name§f: %0%'
+      Event-Handler-Method: '§aMethod Name§f: %0%'
+      Event-Handler-Plugin: '§aRegistered Plugin§f: %0%'
+    Event-Handler-Remove:
+      Success-Main-Message: '&aSuccessfully removed the event handler.'
+      Failed-Main-Message: '&cFailed to remove the event handler.'
+      Event-Cancelled: '§cPluginEventHandlerRemove event was cancelled. Reason: §f%0%'
+      Event-Handler-Not-Found: '§cThe specified handler(method) could not be found.'
+      Success-Removed-Event-Handler: '§aSuccessfully removed the event handler§a.'
 
 Console-Sender:
   Rename-File:
-    Windows-Warning: '§cOn Windows OS, due to file lock restrictions, disable and update command may not work properly. Please use them with caution..'
+    Windows-Warning: '§cOn Windows OS, due to file lock restrictions, Disable and Update command may not work properly. Please use them with caution..'
     Failed-To-Rename: '§cFailed to rename file: §f%0%'
   Updater:
     Error-Checking-Version-Connection: '§cFailed to check version informations via server, Please try updating your plugin: %0%'

@@ -13,7 +13,7 @@ dependencies {
 }
 
 tasks {
-    val shadowJar by named("shadowJar", ShadowJar::class) {
+    named("shadowJar", ShadowJar::class) {
         archiveBaseName.set("BungeePluginManagerPlus")
         dependencies {
             include(project(":api"))

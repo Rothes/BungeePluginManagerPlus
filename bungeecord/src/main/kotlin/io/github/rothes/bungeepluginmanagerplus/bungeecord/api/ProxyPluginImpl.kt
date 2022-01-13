@@ -8,9 +8,12 @@ class ProxyPluginImpl private constructor(
     override val handle: Any,
 ) : ProxyPlugin {
 
+    override fun toString(): String {
+        return "ProxyPluginImpl{name=$name, handle=$handle}"
+    }
+
     companion object Factory {
 
-        @JvmStatic
         fun create(plugin: Plugin): ProxyPlugin {
             return ProxyPluginImpl(plugin.description.name, plugin)
         }

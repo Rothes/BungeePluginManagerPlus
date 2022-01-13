@@ -1,12 +1,12 @@
 {
   "Version_Channels": {
     "Stable": {
-      "Latest_Version_Number": 4,
+      "Latest_Version_Number": 5,
       "Actions": [],
       "Log_Level": "Info",
       "Message": {
-        "en-US": "§bA new version of BPM+ (\"1.1.1\") is available!\n§bUpdate here: https://www.spigotmc.org/resources/bungeepluginmanagerplus.98855/ !",
-        "zh-CN": "§bBungeePluginManager+ 有新版本 (\"1.1.1\") 了!\n§b请更新您的插件: https://www.spigotmc.org/resources/bungeepluginmanagerplus.98855/ !"
+        "en-US": "§bA new version of BPM+ (\"1.2.0\") is available!\n§bUpdate here: https://www.spigotmc.org/resources/bungeepluginmanagerplus.98855/ !",
+        "zh-CN": "§bBungeePluginManager+ 有新版本 (\"1.2.0\") 了!\n§b请更新您的插件: https://www.spigotmc.org/resources/bungeepluginmanagerplus.98855/ !"
       }
     }
   },
@@ -16,17 +16,16 @@
       "Actions": [],
       "Message_Times": 2,
       "Message": {
-        "en-US": "§bEnjoy BPM+? Join our Discord: https://discord.gg/EJ9FsbMPkj",
-        "zh-CN": "§b欢迎加入我们的空巢 QQ群: 422532220!"
+        "en-US": "§bEnjoy BPM+ ? Join our Discord: https://discord.gg/EJ9FsbMPkj",
+        "zh-CN": "§b欢迎加入我们的空巢 QQ群: 422532220 !"
       }
     },
-    "0-1-Test": {
+    "3-4-Update-Tip": {
       "Log_Level": "Info",
       "Actions": [],
-      "Message_Times": 3,
       "Message": {
-        "en-US": "§bTest!",
-        "zh-CN": "§bTest."
+        "en-US": "§bYou can update BPM+ without restarting your proxy with §e/bpmp update §b.",
+        "zh-CN": "§b您可以使用 §e/bpmp update §b指令来动态更新插件."
       }
     }
   }

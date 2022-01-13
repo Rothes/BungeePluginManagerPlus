@@ -36,7 +36,7 @@ object I18nHelper {
         locale = ConfigurationProvider.getProvider(YamlConfiguration::class.java)
             .load(File(plugin.dataFolder, "Config.yml")).getString("Options.Locale")
 
-        val localeFile = File(plugin.dataFolder, "Locale/$locale/Message.yml")
+        val localeFile = File(plugin.dataFolder, "Locales/$locale/Message.yml")
         if (!localeFile.exists()) {
             localeFile.parentFile.mkdirs()
             getDefaultLocale().use {
@@ -84,7 +84,7 @@ object I18nHelper {
             }
         }
         ConfigurationProvider.getProvider(YamlConfiguration::class.java)
-            .save(localeConfig, File(plugin.dataFolder, "Locale/$locale/Message.yml"))
+            .save(localeConfig, File(plugin.dataFolder, "Locales/$locale/Message.yml"))
     }
 
     private fun getLocaleKaddeys(config: Configuration): Map<String, String> {

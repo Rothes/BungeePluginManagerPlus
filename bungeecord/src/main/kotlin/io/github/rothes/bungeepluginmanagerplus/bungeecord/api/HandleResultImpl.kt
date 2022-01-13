@@ -34,9 +34,12 @@ class HandleResultImpl private constructor(
         }
     }
 
+    override fun toString(): String {
+        return "HandleResultImpl{action=$action, success=$success, message=$message, plugin=$plugin}"
+    }
+
     companion object Factory {
 
-        @JvmStatic
         fun create(action: Action, success: Boolean, message: String, plugin: ProxyPlugin?): HandleResult {
             return HandleResultImpl(action, success, message, plugin)
         }

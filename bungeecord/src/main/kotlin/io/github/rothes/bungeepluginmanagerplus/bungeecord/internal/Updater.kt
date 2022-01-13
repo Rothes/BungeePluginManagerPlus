@@ -14,12 +14,14 @@ import java.util.concurrent.TimeUnit
 object Updater {
 
     private const val VERSION_CHANNCEL = "Stable"
-    private const val VERSION_NUMBER = 4
+    private const val VERSION_NUMBER = 5
     private val msgTimesMap = mutableMapOf<String, Int>()
     private val HOST_STRING: String by lazy {
         if (I18nHelper.locale == "zh-CN") "raw.fastgit.org"
         else "raw.githubusercontent.com"
     }
+    internal var newVersionMsg: Array<String>? = null
+        private set
 
     internal fun start() {
         ProxyServer.getInstance().scheduler.schedule(plugin, {
@@ -60,7 +62,7 @@ object Updater {
             val channel = channels.getAsJsonObject(VERSION_CHANNCEL)
             if (channel.has("Message")
                 && channel.getAsJsonPrimitive("Latest_Version_Number").asString.toInt() > VERSION_NUMBER) {
-                sendLocaledJsonMessage(channel, "updater")
+                sendLocaledJsonMessage(channel, "Updater")
             }
         } else {
             warn(I18nHelper.getLocaleMessage("Console-Sender.Updater.Invalid-Channel", VERSION_CHANNCEL))
@@ -93,6 +95,8 @@ object Updater {
 
             val logLevel = json.get("Log_Level")?.asString ?: "default maybe"
 
+            if (id == "Updater")
+                newVersionMsg = msg.split("\n").toTypedArray()
             for (s in msg.split("\n")) {
                 when (logLevel) {
                     "Error" -> error(s)
