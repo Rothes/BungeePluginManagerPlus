@@ -6,4 +6,4 @@ import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import java.io.File
 
 class PluginEventHandlerRemoveEvent(action: Action, plugin: ProxyPlugin, pluginFile: File, handler: ProxyEventHandler, id: Short) :
-    AbstractBpmpEvent(action, plugin, pluginFile, id) {}
+    AbstractBpmpEvent(action, plugin, pluginFile, id)

@@ -13,6 +13,7 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventHandler
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyEventListenerImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.ProxyPluginImpl
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.events.AbstractBpmpEvent
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.events.EventFactory
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Command
@@ -172,8 +173,7 @@ object PluginManager {
         ProxyServer.getInstance().pluginManager.callEvent(event)
         if (event.isCancelled)
             return HandleResultImpl.create(Action.PLUGIN_UNLOAD, false,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Event-Cancelled",
-                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Event-Cancelled", getEventCancelledMessage(event)),
                 ProxyPluginImpl.create(instance))
 
         return try {
@@ -246,9 +246,8 @@ object PluginManager {
         val update = listFiles(instance.file.parentFile).firstOrNull {
             if (isPluginJar(it)) {
                 val des = getPluginDesYaml(it)
-                return@firstOrNull des != null && des.version != instance.description.version && des.name == instance.description.name
-            }
-            false
+                des != null && des.version != instance.description.version && des.name == instance.description.name
+            } else false
         } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Update-Not-Found")
             , ProxyPluginImpl.create(instance))
@@ -303,8 +302,7 @@ object PluginManager {
         ProxyServer.getInstance().pluginManager.callEvent(event)
         if (event.isCancelled)
             return HandleResultImpl.create(Action.COMMAND_REMOVE, false,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Event-Cancelled",
-                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Event-Cancelled", getEventCancelledMessage(event)),
                 command.plugin)
 
         bcCommandsPlugin[command.plugin.handle as Plugin].remove(command.handle)
@@ -334,8 +332,7 @@ object PluginManager {
         ProxyServer.getInstance().pluginManager.callEvent(event)
         if (event.isCancelled)
             return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, false,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Event-Cancelled",
-                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Event-Cancelled", getEventCancelledMessage(event)),
                 listener.plugin)
 
         ProxyServer.getInstance().pluginManager.unregisterListener(listener.handle as Listener)
@@ -374,8 +371,7 @@ object PluginManager {
         ProxyServer.getInstance().pluginManager.callEvent(event)
         if (event.isCancelled)
             return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, false,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Event-Cancelled",
-                    (event.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason"))),
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Event-Cancelled", getEventCancelledMessage(event)),
                 handler.plugin)
 
         bcEventBaked[handler.event.clazz] = bcEventBaked[handler.event.clazz]!!.filterNot { it === handler.handle }.toTypedArray()
@@ -446,10 +442,12 @@ object PluginManager {
     }
 
     private fun isFileNameContains(file: File, name: String): Boolean {
-        if (isPluginJar(file) && (file.nameWithoutExtension.contentEquals(name, true) ||
-                    (name.length >= 4 && file.nameWithoutExtension.contains(name, true)))) {
-            val jar = JarFile(file)
-            return (jar.getJarEntry("bungee.yml") ?: jar.getJarEntry("plugin.yml")) != null
+        if (isPluginJar(file)) {
+            val plain = file.nameWithoutExtension
+            if (plain.contains(name, true) && (name.length >= 4 || plain.length < 4)) {
+                val jar = JarFile(file)
+                return (jar.getJarEntry("bungee.yml") ?: jar.getJarEntry("plugin.yml")) != null
+            }
         }
         return false
     }
@@ -514,6 +512,10 @@ object PluginManager {
 
     private fun listFiles(folder: File): Array<out File> {
         return folder.listFiles()!!.sortedArrayWith(Comparator.comparingLong(File::lastModified).reversed())
+    }
+
+    private fun getEventCancelledMessage(e: AbstractBpmpEvent): String {
+        return e.cancelledMessage ?: I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Default-Reason")
     }
 
 }

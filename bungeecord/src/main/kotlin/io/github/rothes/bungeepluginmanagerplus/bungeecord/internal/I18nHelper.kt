@@ -102,10 +102,11 @@ object I18nHelper {
         val section = config.get(path)
         if (section is Configuration)
             for (key in section.keys) {
-                val get = config.get("$path.$key")
+                val fullKey = "$path.$key"
+                val get = config.get(fullKey)
                 if (get is String)
-                    map["$path.$key"] = ChatColor.translateAlternateColorCodes('&', config.getString("$path.$key"))
-                else addLocaleKaddeys(map, config, "$path.$key")
+                    map[fullKey] = ChatColor.translateAlternateColorCodes('&', config.getString(fullKey))
+                else addLocaleKaddeys(map, config, fullKey)
             }
     }
 
