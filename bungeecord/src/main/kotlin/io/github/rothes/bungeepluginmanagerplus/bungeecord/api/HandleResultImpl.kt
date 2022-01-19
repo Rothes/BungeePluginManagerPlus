@@ -18,17 +18,16 @@ class HandleResultImpl private constructor(
 ) : HandleResult {
 
     internal fun sendResult(sender: CommandSender) {
-        if (sender === ProxyServer.getInstance().console) {
-            if (success) {
-                info(I18nHelper.getLocaleMessage(action.getMainMessageNode(true)))
-                info(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
-            } else {
-                error(I18nHelper.getLocaleMessage(action.getMainMessageNode(false)))
-                error(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
-            }
+        val message1 = I18nHelper.getLocaleMessage(action.getMainMessageNode(success))
+        val message2 = message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), "")
+        if (success) {
+            info(message1)
+            info(message2)
         } else {
-            info(I18nHelper.getLocaleMessage(action.getMainMessageNode(success)))
-            info(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
+            error(message1)
+            error(message2)
+        }
+        if (sender !== ProxyServer.getInstance().console) {
             sender.messageLocaled(action.getMainMessageNode(success))
             @Suppress("DEPRECATION") sender.sendMessage(message)
         }
