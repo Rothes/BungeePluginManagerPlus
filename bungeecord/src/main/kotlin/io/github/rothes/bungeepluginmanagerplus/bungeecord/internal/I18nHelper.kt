@@ -49,10 +49,20 @@ object I18nHelper {
     }
 
     fun getPrefixedLocaleMessage(key: String, vararg replacements: String): String {
-        return getLocaleMessage("Sender.Prefix") + getLocaleMessage(key, *replacements)
+        return getPrefixedLocaleMessage(key, replacements)
+    }
+
+    @JvmName("getPrefixedLocaleMessage1")
+    fun getPrefixedLocaleMessage(key: String, replacements: Array<out String>): String {
+        return getLocaleMessage("Sender.Prefix") + getLocaleMessage(key, replacements)
     }
 
     fun getLocaleMessage(key: String, vararg replacements: String): String {
+        return getLocaleMessage(key, replacements)
+    }
+
+    @JvmName("getLocaleMessage1")
+    fun getLocaleMessage(key: String, replacements: Array<out String>): String {
         var msg = messages[key] ?: "§cMissing locale key: $key"
 
         for (i in replacements.indices) {

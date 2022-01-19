@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands
 
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
@@ -8,7 +6,6 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.TabExecutor
@@ -19,8 +16,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
 
     override fun execute(sender: CommandSender, oriArgs: Array<String>) {
         if (!sender.hasPermission("bungeepluginmanagerplus.admin")) {
-            sender.sendMessage(*ComponentBuilder()
-                .appendLegacy(I18nHelper.getPrefixedLocaleMessage("Sender.No-Permission")).create())
+            sender.messageLocaled("Sender.No-Permission")
             return
         }
         val args = mergeQuotes(oriArgs)
@@ -37,29 +33,29 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         val plug = PluginManager.getPlugins().firstOrNull { plug ->
                             val it = (plug.handle as Plugin).description
                             it.name.contentEquals(args[1], true)
-                        } ?: return sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Not-Found"))
+                        } ?: return sender.messageLocaled("Sender.Commands.Info.Plugin-Not-Found")
 
                         with((plug.handle as Plugin).description) {
                             if (name != null)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Name", name))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Name", name)
                             if (version != null)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Version", version))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Version", version)
                             if (author != null)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Author", author))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Author", author)
                             if (description != null)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Description", description))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Description", description)
                             if (depends != null && depends.isNotEmpty())
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Depends", depends.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Depends", depends.toString())
                             if (softDepends != null && softDepends.isNotEmpty())
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Soft-Depends", softDepends.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Soft-Depends", softDepends.toString())
                             if (libraries != null && libraries.isNotEmpty())
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Libraries", libraries.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Libraries", libraries.toString())
                             val commands = PluginManager.getCommandsByPlugin(plug)
                             if (commands.isNotEmpty()) {
                                 val str = mutableListOf<String>()
                                 for (cmd in commands)
                                     str.add(cmd.name)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Commands", str.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Commands", str.toString())
                             }
                             /*
                             val eventHandlers = PluginManager.getEventHandlersByPlugin(plug)
@@ -67,17 +63,17 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                                 val str = mutableListOf<String>()
                                 for (handler in eventHandlers)
                                     str.add("§e(${handler.event.name})§f${handler.method.declaringClass.name}§e:§f${handler.method.name}")
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Event-Handlers", str.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Event-Handlers", str.toString())
                             }*/ // Too long, use Listeners instead.
                             val listeners = PluginManager.getEventListenersByPlugin(plug)
                             if (listeners.isNotEmpty()) {
                                 val str = mutableListOf<String>()
                                 for (listener in listeners)
                                     str.add("§e(${PluginManager.getEventHandlersByListener(listener).size})§f${listener.clazz.name}")
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-Event-Listeners", str.toString()))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-Event-Listeners", str.toString())
                             }
                             if (file != null)
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Info.Plugin-File", file.path))
+                                sender.messageLocaled("Sender.Commands.Info.Plugin-File", file.path)
                         }
                         return
                     }
@@ -103,9 +99,8 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         for (module in modules) {
                             builder.append("§e${module}§f, ")
                         }
-                        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Prefix"))
-                            .appendLegacy("§r").strikethrough(false).bold(false)
-                            .appendLegacy(builder.toString().substring(0, builder.length - 2) + ".").create())
+                        @Suppress("DEPRECATION") sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Prefix")
+                                + builder.toString().substring(0, builder.length - 2) + ".")
                         return
                     }
                 }
@@ -156,9 +151,8 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         for (name in names) {
                             builder.append("§a${name}§f, ")
                         }
-                        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Prefix"))
-                            .appendLegacy("§r").strikethrough(false).bold(false)
-                            .appendLegacy(builder.toString().substring(0, builder.length - 2) + ".").create())
+                        @Suppress("DEPRECATION") sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Prefix")
+                                + builder.toString().substring(0, builder.length - 2) + ".")
                         return
                     }
                 }
@@ -166,18 +160,18 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size >= 2) {
                         val command = PluginManager.getCommandByName(args[1])
                         if (command == null) {
-                            sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Info.Command-Not-Found"))
+                            sender.messageLocaled("Sender.Commands.Command-Info.Command-Not-Found")
                             return
                         }
                         with(command) {
-                            sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Info.Command-Name", name))
+                            sender.messageLocaled("Sender.Commands.Command-Info.Command-Name", name)
                             val cmdPerm = this.permission
                             if (cmdPerm != null && cmdPerm.isNotEmpty())
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Info.Command-Permission", cmdPerm))
+                                sender.messageLocaled("Sender.Commands.Command-Info.Command-Permission", cmdPerm)
                             if (aliases.isNotEmpty())
-                                sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Info.Command-Aliases",
-                                    aliases.contentToString()))
-                            sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Info.Command-Plugin", plugin.name))
+                                sender.messageLocaled("Sender.Commands.Command-Info.Command-Aliases",
+                                    aliases.contentToString())
+                            sender.messageLocaled("Sender.Commands.Command-Info.Command-Plugin", plugin.name)
                         }
                         return
                     }
@@ -186,7 +180,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size >= 2) {
                         val command = PluginManager.getCommandByName(args[1])
                         if (command == null) {
-                            sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Command-Not-Found"))
+                            sender.messageLocaled("Sender.Commands.Command-Remove.Command-Not-Found")
                             return
                         }
                         sendResult(sender, PluginManager.removeCommand(command))
@@ -202,9 +196,8 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         val builder = StringBuilder(I18nHelper.getLocaleMessage("Sender.Commands.Event-Listener-List.Message-Format"
                             , names.size.toString()) + "§f: ")
                         names.forEach { builder.append("§a${it}§f, ") }
-                        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Prefix"))
-                            .appendLegacy("§r").strikethrough(false).bold(false)
-                            .appendLegacy(builder.toString().substring(0, builder.length - 2) + ".").create())
+                        @Suppress("DEPRECATION") sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Prefix")
+                                + builder.toString().substring(0, builder.length - 2) + ".")
                         return
                     }
                 }
@@ -212,16 +205,16 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size == 2) {
                         val listener = PluginManager.getEventListenersAll().firstOrNull {
                             it.clazz.name == args[1]
-                        } ?: return sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Info.Event-Listener-Not-Found"))
+                        } ?: return sender.messageLocaled("Sender.Commands.Event-Listener-Info.Event-Listener-Not-Found")
 
                         val names = mutableListOf<String>()
                         for (handler in PluginManager.getEventHandlersByListener(listener)) {
                             names.add("§e(${handler.event.name})§f${handler.method.declaringClass.name}§e:§f${handler.method.name}")
                         }
 
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Info.Event-Listener-Class", listener.clazz.name))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Info.Event-Listener-Handlers", names.toString()))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Info.Event-Listener-Plugin", listener.plugin.name))
+                        sender.messageLocaled("Sender.Commands.Event-Listener-Info.Event-Listener-Class", listener.clazz.name)
+                        sender.messageLocaled("Sender.Commands.Event-Listener-Info.Event-Listener-Handlers", names.toString())
+                        sender.messageLocaled("Sender.Commands.Event-Listener-Info.Event-Listener-Plugin", listener.plugin.name)
                         return
                     }
                 }
@@ -229,7 +222,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size == 2) {
                         val listener = PluginManager.getEventListenersAll().firstOrNull {
                             it.clazz.name == args[1]
-                        } ?: return sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Event-Listener-Not-Found"))
+                        } ?: return sender.messageLocaled("Sender.Commands.Event-Listener-Remove.Event-Listener-Not-Found")
 
                         sendResult(sender, PluginManager.removeEventListener(listener))
                         return
@@ -244,9 +237,8 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         val builder = StringBuilder(I18nHelper.getLocaleMessage("Sender.Commands.Event-Handler-List.Message-Format"
                             , names.size.toString()) + "§f: ")
                         names.forEach { builder.append("§a${it}§f, ") }
-                        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Prefix"))
-                            .appendLegacy("§r").strikethrough(false).bold(false)
-                            .appendLegacy(builder.toString().substring(0, builder.length - 2) + ".").create())
+                        @Suppress("DEPRECATION") sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Prefix")
+                                + builder.toString().substring(0, builder.length - 2) + ".")
                         return
                     }
                 }
@@ -254,13 +246,13 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size == 3) {
                         val handler = PluginManager.getEventHandlersAll().firstOrNull {
                             it.method.declaringClass.name == args[1] && it.method.name == args[2]
-                        } ?: return sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Not-Found"))
+                        } ?: return sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Not-Found")
 
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Event", handler.event.name))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Priority", handler.priority.name))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Class", handler.method.declaringClass.name))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Method", handler.method.name))
-                        sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Info.Event-Handler-Plugin", handler.plugin.name))
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Event", handler.event.name)
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Priority", handler.priority.name)
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Class", handler.method.declaringClass.name)
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Method", handler.method.name)
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Plugin", handler.plugin.name)
                         return
                     }
                 }
@@ -268,7 +260,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                     if (args.size == 3) {
                         val handler = PluginManager.getEventHandlersAll().firstOrNull {
                             it.method.declaringClass.name == args[1] && it.method.name == args[2]
-                        } ?: return sender.sendMessage(I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Event-Handler-Not-Found"))
+                        } ?: return sender.messageLocaled("Sender.Commands.Event-Handler-Remove.Event-Handler-Not-Found")
 
                         sendResult(sender, PluginManager.removeEventHandler(handler))
                         return
@@ -286,36 +278,35 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
 
     private fun sendHelp(sender: CommandSender, page: String) {
         // Hard code since there's a bug with chat component.
-        sender.sendMessage(*ComponentBuilder().appendLegacy("§7§m------").appendLegacy("").strikethrough(false)
-            .appendLegacy("§l §7[ §6§lBungeePluginManager§3§l+§7 ]§l ").appendLegacy("§7§m------").create())
+        sender.messageLocaled("Sender.Commands.Help.Header", prefixed = false)
         when (page) {
             "1" -> {
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.List")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Info")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Load")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Unload")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Reload")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Enable")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Disable")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Update")).create())
-                sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Commands.Help.Next-Page", "2"))
+                sender.messageLocaled("Sender.Commands.Help.List", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Info", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Load", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Unload", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Reload", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Enable", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Disable", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Update", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Next-Page", "2", prefixed = false)
             }
             "2" -> {
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Command-List")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Command-Info")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Command-Remove")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Listener-List")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Listener-Info")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Listener-Remove")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Handler-List")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Handler-Info")).create())
-                sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Event-Handler-Remove")).create())
+                sender.messageLocaled("Sender.Commands.Help.Command-List", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Command-Info", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Command-Remove", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Listener-List", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Listener-Info", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Listener-Remove", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Handler-List", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Handler-Info", prefixed = false)
+                sender.messageLocaled("Sender.Commands.Help.Event-Handler-Remove", prefixed = false)
             }
             else -> {
-                sender.sendMessage(I18nHelper.getLocaleMessage("Sender.Commands.Help.Page-Exceeded", "2"))
+                sender.messageLocaled("Sender.Commands.Help.Page-Exceeded", "2", prefixed = false)
             }
         }
-        sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getLocaleMessage("Sender.Commands.Help.Footer")).create())
+        sender.messageLocaled("Sender.Commands.Help.Footer", prefixed = false)
     }
 
     override fun onTabComplete(sender: CommandSender, oriArgs: Array<String>): MutableIterable<String> {
@@ -467,6 +458,14 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
             val length = stringBuilder.length
             stringBuilder.delete(length - quotes.length / 2, length)
         }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun CommandSender.messageLocaled(key: String, vararg replacements: String, prefixed: Boolean = true) {
+        if (prefixed)
+            sendMessage(I18nHelper.getPrefixedLocaleMessage(key, replacements))
+        else
+            sendMessage(I18nHelper.getLocaleMessage(key, replacements))
     }
 
 }
