@@ -314,6 +314,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
         val list = mutableListOf<String>()
         when (args.size) {
             1 -> {
+                list.add("help")
                 list.add("info")
                 list.add("list")
                 list.add("load")
