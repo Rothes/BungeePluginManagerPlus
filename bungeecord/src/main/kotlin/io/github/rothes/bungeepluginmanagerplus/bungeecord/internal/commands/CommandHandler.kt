@@ -4,6 +4,7 @@ import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.HandleResultImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.messageLocaled
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.plugin.Command
@@ -459,14 +460,6 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
             val length = stringBuilder.length
             stringBuilder.delete(length - quotes.length / 2, length)
         }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun CommandSender.messageLocaled(key: String, vararg replacements: String, prefixed: Boolean = true) {
-        if (prefixed)
-            sendMessage(I18nHelper.getPrefixedLocaleMessage(key, replacements))
-        else
-            sendMessage(I18nHelper.getLocaleMessage(key, replacements))
     }
 
 }

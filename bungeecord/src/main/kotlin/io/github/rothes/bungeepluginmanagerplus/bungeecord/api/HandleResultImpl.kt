@@ -6,9 +6,9 @@ import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.error
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
+import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.messageLocaled
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
-import net.md_5.bungee.api.chat.ComponentBuilder
 
 class HandleResultImpl private constructor(
     override val action: Action,
@@ -29,8 +29,8 @@ class HandleResultImpl private constructor(
         } else {
             info(I18nHelper.getLocaleMessage(action.getMainMessageNode(success)))
             info(message.replaceFirst(I18nHelper.getLocaleMessage("Sender.Prefix"), ""))
-            sender.sendMessage(*ComponentBuilder().appendLegacy(I18nHelper.getPrefixedLocaleMessage(action.getMainMessageNode(success))).create())
-            sender.sendMessage(*ComponentBuilder().appendLegacy(message).create())
+            sender.messageLocaled(action.getMainMessageNode(success))
+            @Suppress("DEPRECATION") sender.sendMessage(message)
         }
     }
 
