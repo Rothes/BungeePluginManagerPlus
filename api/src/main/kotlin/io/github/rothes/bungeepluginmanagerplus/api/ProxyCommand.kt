@@ -1,11 +1,13 @@
 package io.github.rothes.bungeepluginmanagerplus.api
 
+import java.util.*
+
 interface ProxyCommand {
 
     val name: String
-    val permission: String?
+    val permission: Optional<String>
     val aliases: Array<String>
-    val permissionMessage: String?
+    val permissionMessage: Optional<String>
     val plugin: ProxyPlugin
     val handle: Any
 

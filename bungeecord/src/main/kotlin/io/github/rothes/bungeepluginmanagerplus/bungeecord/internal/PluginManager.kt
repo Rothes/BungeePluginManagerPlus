@@ -133,7 +133,8 @@ object PluginManager {
                     I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Missing-Dependency", depend), null)
         }
         if (bcPlugins.containsKey(pluginDes.name)) return HandleResultImpl.create(Action.PLUGIN_LOAD, false,
-            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Already-Loaded"), ProxyPluginImpl.create(bcPlugins[pluginDes.name]!!))
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Plugin-Already-Loaded"),
+            ProxyPluginImpl.create(bcPlugins[pluginDes.name]!!))
 
         val event = EventFactory.createPluginLoadEvent(action, pluginDes.name, plugin, if (eventId < 0) EventFactory.nextId() else eventId)
         ProxyServer.getInstance().pluginManager.callEvent(event)
@@ -155,8 +156,8 @@ object PluginManager {
             bcToLoad[pluginDes.name] = pluginDes
             HandleResultImpl.create(Action.PLUGIN_LOAD, success,
                 if (success) I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Success-Loaded-Plugin", pluginDes.name)
-                else I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Failed-Loading-Plugin", pluginDes.name)
-                , if (success) ProxyPluginImpl.create(bcPlugins[pluginDes.name]!!) else null)
+                else I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Load.Failed-Loading-Plugin", pluginDes.name),
+                if (success) ProxyPluginImpl.create(bcPlugins[pluginDes.name]!!) else null)
         } catch (e: Throwable) {
             e.printStackTrace()
             HandleResultImpl.create(Action.PLUGIN_LOAD, false,
@@ -184,12 +185,12 @@ object PluginManager {
             bcPlugins.remove(instance.description.name)
             bcToLoad.remove(instance.description.name)
             HandleResultImpl.create(Action.PLUGIN_UNLOAD, true,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Success-Unloaded-Plugin", instance.description.name)
-                , ProxyPluginImpl.create(instance))
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Success-Unloaded-Plugin", instance.description.name),
+                ProxyPluginImpl.create(instance))
         } catch (e: Throwable) {
             HandleResultImpl.create(Action.PLUGIN_UNLOAD, false,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Failed-Unloading-Plugin", instance.description.name)
-                , ProxyPluginImpl.create(instance))
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Unload.Failed-Unloading-Plugin", instance.description.name),
+                ProxyPluginImpl.create(instance))
         }
     }
 
@@ -198,7 +199,7 @@ object PluginManager {
         val unload = unloadPlugin(plugin, Action.PLUGIN_RELOAD, eventId)
         if (!unload.success)
             return HandleResultImpl.create(Action.PLUGIN_RELOAD, false, unload.message, unload.plugin)
-        val load = loadPlugin((unload.plugin!!.handle as Plugin).description.file, Action.PLUGIN_RELOAD, eventId)
+        val load = loadPlugin((unload.plugin.get().handle as Plugin).description.file, Action.PLUGIN_RELOAD, eventId)
         if (!load.success)
             return HandleResultImpl.create(Action.PLUGIN_RELOAD, false, load.message, load.plugin)
         return HandleResultImpl.create(Action.PLUGIN_RELOAD, true,
@@ -219,20 +220,20 @@ object PluginManager {
         if (load.success)
             found.renameTo(File(found.parentFile, "${found.nameWithoutExtension}.jar"))
         return HandleResultImpl.create(Action.PLUGIN_ENABLE, load.success, if (load.success)
-            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Enable.Success-Enabled-Plugin"
-                , (load.plugin!!.handle as Plugin).description.name) else load.message
-            , load.plugin)
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Enable.Success-Enabled-Plugin",
+                (load.plugin.get().handle as Plugin).description.name) else load.message,
+            load.plugin)
     }
 
     internal fun disablePlugin(plugin: String): HandleResult {
         val unload = unloadPlugin(plugin, Action.PLUGIN_DISABLE)
         return if (unload.success) {
-            val file = (unload.plugin!!.handle as Plugin).description.file
+            val file = (unload.plugin.get().handle as Plugin).description.file
             disableFile(file)
 //            warn(file.renameTo(File(file.parentFile, file.nameWithoutExtension + ".jar.disabled")).toString())
             HandleResultImpl.create(Action.PLUGIN_DISABLE, true,
-                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Disable.Success-Disabled-Plugin"
-                    , (unload.plugin!!.handle as Plugin).description.name) ,unload.plugin)
+                I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Disable.Success-Disabled-Plugin",
+                    (unload.plugin.get().handle as Plugin).description.name), unload.plugin)
         } else {
             HandleResultImpl.create(Action.PLUGIN_DISABLE, false, unload.message, unload.plugin)
         }
@@ -241,36 +242,36 @@ object PluginManager {
     internal fun updatePlugin(plugin: String): HandleResult {
         val instance = bcPlugins.values.firstOrNull {
             it.description.name.equals(plugin, true)
-        } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
-            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Plugin-Not-Found"), null)
+        } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false,
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Plugin-Not-Found"), null)
         val update = listFiles(instance.file.parentFile).firstOrNull {
             if (isPluginJar(it)) {
                 val des = getPluginDesYaml(it)
                 des != null && des.version != instance.description.version && des.name == instance.description.name
             } else false
-        } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
-            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Update-Not-Found")
-            , ProxyPluginImpl.create(instance))
+        } ?: return HandleResultImpl.create(Action.PLUGIN_UPDATE, false,
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Update-Not-Found"),
+            ProxyPluginImpl.create(instance))
 
         val eventId = EventFactory.nextId()
         val oldFile = instance.description.file
         val unload = unloadPlugin(instance.description.name, Action.PLUGIN_UPDATE, eventId)
         if (!unload.success) {
-            return HandleResultImpl.create(Action.PLUGIN_UPDATE, false, unload.message
-                , ProxyPluginImpl.create(instance))
+            return HandleResultImpl.create(Action.PLUGIN_UPDATE, false, unload.message,
+                ProxyPluginImpl.create(instance))
         }
 
         val load = loadPlugin(update, Action.PLUGIN_UPDATE, eventId)
         if (!load.success) {
-            return HandleResultImpl.create(Action.PLUGIN_UPDATE, false
-                , load.message + I18nHelper.getLocaleMessage("Sender.Commands.Update.Reverted-Old-Version")
-                , loadPlugin(oldFile).plugin)
+            return HandleResultImpl.create(Action.PLUGIN_UPDATE, false,
+                load.message + I18nHelper.getLocaleMessage("Sender.Commands.Update.Reverted-Old-Version"),
+                loadPlugin(oldFile).plugin)
         }
         oldFile(oldFile)
         return HandleResultImpl.create(Action.PLUGIN_UPDATE, true
             , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Update.Success-Updated-Plugin"
                 , instance.description.name, instance.description.version
-                , (load.plugin!!.handle as Plugin).description.version), load.plugin)
+                , (load.plugin.get().handle as Plugin).description.version), load.plugin)
     }
 
     internal fun getCommandByName(command: String): ProxyCommand? {
@@ -303,16 +304,16 @@ object PluginManager {
         if (event.isCancelled)
             return HandleResultImpl.create(Action.COMMAND_REMOVE, false,
                 I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Event-Cancelled", getEventCancelledMessage(event)),
-                command.plugin)
+                Optional.of(command.plugin))
 
         bcCommandsPlugin[command.plugin.handle as Plugin].remove(command.handle)
         bcCommandsString.remove(command.name.lowercase(Locale.ROOT))
         for (alias in command.aliases) {
             bcCommandsString.remove(alias.lowercase(Locale.ROOT))
         }
-        return HandleResultImpl.create(Action.COMMAND_REMOVE, true
-            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Success-Removed-Command", command.name)
-            , command.plugin)
+        return HandleResultImpl.create(Action.COMMAND_REMOVE, true,
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Command-Remove.Success-Removed-Command", command.name),
+            Optional.of(command.plugin))
     }
 
     internal fun getEventListenersAll(): Array<ProxyEventListener> {
@@ -333,12 +334,12 @@ object PluginManager {
         if (event.isCancelled)
             return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, false,
                 I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Event-Cancelled", getEventCancelledMessage(event)),
-                listener.plugin)
+                Optional.of(listener.plugin))
 
         ProxyServer.getInstance().pluginManager.unregisterListener(listener.handle as Listener)
-        return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, true
-            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Success-Removed-Event-Listener")
-            , listener.plugin)
+        return HandleResultImpl.create(Action.EVENT_LISTENER_REMOVE, true,
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Listener-Remove.Success-Removed-Event-Listener"),
+            Optional.of(listener.plugin))
     }
 
     internal fun getEventHandlersAll(): Array<ProxyEventHandler> {
@@ -372,7 +373,7 @@ object PluginManager {
         if (event.isCancelled)
             return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, false,
                 I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Event-Cancelled", getEventCancelledMessage(event)),
-                handler.plugin)
+                Optional.of(handler.plugin))
 
         bcEventBaked[handler.event.clazz] = bcEventBaked[handler.event.clazz]!!.filterNot { it === handler.handle }.toTypedArray()
 
@@ -383,9 +384,9 @@ object PluginManager {
                 }
             }
         }
-        return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, true
-            , I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Success-Removed-Event-Handler")
-            , handler.plugin)
+        return HandleResultImpl.create(Action.EVENT_HANDLER_REMOVE, true,
+            I18nHelper.getPrefixedLocaleMessage("Sender.Commands.Event-Handler-Remove.Success-Removed-Event-Handler"),
+            Optional.of(handler.plugin))
     }
 
 

@@ -167,8 +167,8 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         with(command) {
                             sender.messageLocaled("Sender.Commands.Command-Info.Command-Name", name)
                             val cmdPerm = this.permission
-                            if (cmdPerm != null && cmdPerm.isNotEmpty())
-                                sender.messageLocaled("Sender.Commands.Command-Info.Command-Permission", cmdPerm)
+                            if (cmdPerm.isPresent && cmdPerm.get().isNotEmpty())
+                                sender.messageLocaled("Sender.Commands.Command-Info.Command-Permission", cmdPerm.get())
                             if (aliases.isNotEmpty())
                                 sender.messageLocaled("Sender.Commands.Command-Info.Command-Aliases",
                                     aliases.contentToString())

@@ -15,7 +15,7 @@ class HandleResultImpl private constructor(
     override val action: Action,
     override val success: Boolean,
     override val message: String,
-    override val plugin: ProxyPlugin?,
+    override val plugin: Optional<ProxyPlugin>,
 ) : HandleResult {
 
     internal fun sendResult(sender: CommandSender) {
@@ -49,9 +49,14 @@ class HandleResultImpl private constructor(
 
     companion object Factory {
 
-        fun create(action: Action, success: Boolean, message: String, plugin: ProxyPlugin?): HandleResult {
+        fun create(action: Action, success: Boolean, message: String, plugin: Optional<ProxyPlugin>): HandleResult {
             return HandleResultImpl(action, success, message, plugin)
         }
+
+        fun create(action: Action, success: Boolean, message: String, plugin: ProxyPlugin?): HandleResult {
+            return HandleResultImpl(action, success, message, Optional.ofNullable(plugin))
+        }
+
     }
 
 }
