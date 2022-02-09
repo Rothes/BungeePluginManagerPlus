@@ -1,6 +1,7 @@
 package io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.commands
 
 import io.github.rothes.bungeepluginmanagerplus.api.HandleResult
+import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventPriority
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.api.HandleResultImpl
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.I18nHelper
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.PluginManager
@@ -250,7 +251,15 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                         } ?: return sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Not-Found")
 
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Event", handler.event.name)
-                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Priority", handler.priority.name)
+                        sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Priority",
+                            when (handler.priority) {
+                                ProxyEventPriority.HIGHEST   -> "HIGHEST"
+                                ProxyEventPriority.HIGH      -> "HIGH"
+                                ProxyEventPriority.NORMAL    -> "NORMAL"
+                                ProxyEventPriority.LOW       -> "LOW"
+                                ProxyEventPriority.LOWEST    -> "LOWEST"
+                                else                         -> {"Custom(${handler.priority})"}
+                            })
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Class", handler.method.declaringClass.name)
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Method", handler.method.name)
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Plugin", handler.plugin.name)

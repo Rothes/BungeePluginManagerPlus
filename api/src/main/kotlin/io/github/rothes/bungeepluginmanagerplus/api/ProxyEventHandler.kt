@@ -7,7 +7,7 @@ import java.lang.reflect.Method
  */
 interface ProxyEventHandler {
 
-    val priority: ProxyEventPriority
+    val priority: Byte
     val method: Method
     val event: ProxyEvent
     val plugin: ProxyPlugin

@@ -2,15 +2,13 @@ package io.github.rothes.bungeepluginmanagerplus.bungeecord.api
 
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyEvent
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventHandler
-import io.github.rothes.bungeepluginmanagerplus.api.ProxyEventPriority
 import io.github.rothes.bungeepluginmanagerplus.api.ProxyPlugin
-import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.warn
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventHandlerMethod
 import java.lang.reflect.Method
 
 class ProxyEventHandlerImpl private constructor(
-    override val priority: ProxyEventPriority,
+    override val priority: Byte,
     override val event: ProxyEvent,
     override val plugin: ProxyPlugin,
     override val method: Method,
@@ -32,17 +30,7 @@ class ProxyEventHandlerImpl private constructor(
     companion object Factory {
 
         fun create(event: ProxyEvent, plugin: ProxyPlugin, handler: EventHandlerMethod): ProxyEventHandler {
-            val priority = when (val int = handler.method.getAnnotation(EventHandler::class.java).priority.toInt()) {
-                -64 -> ProxyEventPriority.LOWEST
-                -32 -> ProxyEventPriority.LOW
-                0 -> ProxyEventPriority.NORMAL
-                32 -> ProxyEventPriority.HIGH
-                64 -> ProxyEventPriority.HIGHEST
-                else -> {
-                    warn("Unknown Priority $int of handler ${handler.method.declaringClass.name}:${handler.method.name}")
-                    ProxyEventPriority.NORMAL
-                }
-            }
+            val priority = handler.method.getAnnotation(EventHandler::class.java).priority
             return ProxyEventHandlerImpl(priority, event, plugin, handler.method, handler)
         }
 
