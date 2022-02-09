@@ -17,6 +17,14 @@ class ProxyEventHandlerImpl private constructor(
     override val handle: Any,
 ) : ProxyEventHandler {
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProxyEventHandlerImpl && other.handle === this.handle
+    }
+
+    override fun hashCode(): Int {
+        return handle.hashCode()
+    }
+
     override fun toString(): String {
         return "ProxyEventHandlerImpl{priority=$priority, event=$event, plugin=$plugin, method=$method, handle=$handle}"
     }

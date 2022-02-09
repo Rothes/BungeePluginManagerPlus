@@ -8,6 +8,14 @@ class ProxyEventImpl private constructor(
     override val clazz: Class<out Any>,
 ) : ProxyEvent {
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProxyEventImpl && other.clazz === this.clazz
+    }
+
+    override fun hashCode(): Int {
+        return clazz.hashCode()
+    }
+
     override fun toString(): String {
         return "ProxyEventImpl{name=$name, clazz=$clazz}"
     }

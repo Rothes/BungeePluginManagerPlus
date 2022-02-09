@@ -10,6 +10,14 @@ class ProxyEventListenerImpl private constructor(
     override val handle: Any,
 ) : ProxyEventListener {
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProxyEventListenerImpl && other.handle === this.handle
+    }
+
+    override fun hashCode(): Int {
+        return handle.hashCode()
+    }
+
     override fun toString(): String {
         return "ProxyEventListenerImpl{clazz=$clazz, plugin=$plugin, handle=$handle}"
     }

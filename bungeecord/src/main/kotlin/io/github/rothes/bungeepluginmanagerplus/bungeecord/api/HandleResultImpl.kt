@@ -9,6 +9,7 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.messageLocaled
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.ProxyServer
+import java.util.*
 
 class HandleResultImpl private constructor(
     override val action: Action,
@@ -31,6 +32,15 @@ class HandleResultImpl private constructor(
             sender.messageLocaled(action.getMainMessageNode(success))
             @Suppress("DEPRECATION") sender.sendMessage(message)
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is HandleResultImpl && other.action == this.action && other.success == this.success
+                && other.plugin === this.plugin && other.message == this.message
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(action, success, message, plugin)
     }
 
     override fun toString(): String {

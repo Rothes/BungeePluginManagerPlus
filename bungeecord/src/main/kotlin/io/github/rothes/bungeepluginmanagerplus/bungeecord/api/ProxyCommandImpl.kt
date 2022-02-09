@@ -13,6 +13,14 @@ class ProxyCommandImpl private constructor(
     override val handle: Any,
 ) : ProxyCommand {
 
+    override fun equals(other: Any?): Boolean {
+        return other is ProxyCommandImpl && other.handle === this.handle
+    }
+
+    override fun hashCode(): Int {
+        return handle.hashCode()
+    }
+
     override fun toString(): String {
         return "ProxyCommandImpl{name=$name, permission=$permission, aliases=$aliases, permissionMessage=$permissionMessage, plugin=$plugin}, handle=$handle}"
     }
