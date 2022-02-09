@@ -14,6 +14,8 @@ object Listeners : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onBpmpUnloadEvent(e: PluginUnloadEvent) {
         if (e.action == Action.PLUGIN_UNLOAD && e.plugin.name == "BungeePluginManagerPlus") {
+            if (Updater.prohibited)
+                return
             e.isCancelled = true
             e.cancelledMessage = I18nHelper.getLocaleMessage("Sender.Event.Cancelled-Reasons.Cannot-Unload-Bpmp")
         }
@@ -24,7 +26,7 @@ object Listeners : Listener {
         if (Updater.newVersionMsg != null && e.player.hasPermission("bungeepluginmanagerplus.admin")) {
             ProxyServer.getInstance().scheduler.schedule(plugin, {
                 for (msg in Updater.newVersionMsg!!) {
-                    e.player.sendMessage(msg)
+                    @Suppress("DEPRECATION") e.player.sendMessage(msg)
                 }
             }, 1, TimeUnit.SECONDS)
         }

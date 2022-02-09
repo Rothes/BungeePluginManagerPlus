@@ -22,6 +22,8 @@ object Updater {
     }
     internal var newVersionMsg: Array<String>? = null
         private set
+    internal var prohibited = false
+        private set
 
     internal fun start() {
         ProxyServer.getInstance().scheduler.schedule(plugin, {
@@ -110,6 +112,7 @@ object Updater {
 
         for (action in json.getAsJsonArray("Actions")) {
             if (action.asString == "Prohibit") {
+                prohibited = true
                 PluginManager.unloadPlugin("BungeePluginManagerPlus")
             }
         }
