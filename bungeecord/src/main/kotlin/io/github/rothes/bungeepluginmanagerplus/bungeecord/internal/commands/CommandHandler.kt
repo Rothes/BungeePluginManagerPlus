@@ -258,7 +258,7 @@ object CommandHandler : Command("bungeepluginmanagerplus", null, "bpmp"), TabExe
                                 ProxyEventPriority.NORMAL    -> "NORMAL"
                                 ProxyEventPriority.LOW       -> "LOW"
                                 ProxyEventPriority.LOWEST    -> "LOWEST"
-                                else                         -> {"Custom(${handler.priority})"}
+                                else                         -> "Custom(${handler.priority})"
                             })
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Class", handler.method.declaringClass.name)
                         sender.messageLocaled("Sender.Commands.Event-Handler-Info.Event-Handler-Method", handler.method.name)
