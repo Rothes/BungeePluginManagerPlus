@@ -42,7 +42,7 @@ object I18nHelper {
             }
         }
         localeConfig = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(localeFile)
-        messages.putAll(getLocaleKaddeys(localeConfig))
+        messages.putAll(getLocaleKeys(localeConfig))
         checkLocaleKeys()
     }
 
@@ -86,7 +86,7 @@ object I18nHelper {
                 ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(it)
             }
         }
-        for (entry in getLocaleKaddeys(default).entries) {
+        for (entry in getLocaleKeys(default).entries) {
             if (!messages.containsKey(entry.key)) {
                 messages[entry.key] = entry.value
                 localeConfig.set(entry.key, entry.value)
@@ -96,18 +96,18 @@ object I18nHelper {
             .save(localeConfig, File(plugin.dataFolder, "Locales/$locale/Message.yml"))
     }
 
-    private fun getLocaleKaddeys(config: Configuration): Map<String, String> {
+    private fun getLocaleKeys(config: Configuration): Map<String, String> {
         val map = mutableMapOf<String, String>()
         for (key in config.keys) {
             val get = config.get(key)
             if (get is String)
                 map[key] = ChatColor.translateAlternateColorCodes('&', get)
-            else addLocaleKaddeys(map,config, key)
+            else addLocaleKeys(map,config, key)
         }
         return map
     }
 
-    private fun addLocaleKaddeys(map: MutableMap<String, String>, config: Configuration, path: String) {
+    private fun addLocaleKeys(map: MutableMap<String, String>, config: Configuration, path: String) {
         val section = config.get(path)
         if (section is Configuration)
             for (key in section.keys) {
@@ -115,7 +115,7 @@ object I18nHelper {
                 val get = config.get(fullKey)
                 if (get is String)
                     map[fullKey] = ChatColor.translateAlternateColorCodes('&', config.getString(fullKey))
-                else addLocaleKaddeys(map, config, fullKey)
+                else addLocaleKeys(map, config, fullKey)
             }
     }
 
