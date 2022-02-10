@@ -6,8 +6,6 @@ import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
 import java.io.File
 import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
 
@@ -83,9 +81,10 @@ object I18nHelper {
     }
 
     private fun checkLocaleKeys() {
-        val default = getDefaultLocale().use {
-            ConfigurationProvider.getProvider(YamlConfiguration::class.java)
-                .load(InputStreamReader(it, StandardCharsets.UTF_8))
+        val default = getDefaultLocale().use { stream ->
+            stream.reader(Charsets.UTF_8).use {
+                ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(it)
+            }
         }
         for (entry in getLocaleKaddeys(default).entries) {
             if (!messages.containsKey(entry.key)) {
