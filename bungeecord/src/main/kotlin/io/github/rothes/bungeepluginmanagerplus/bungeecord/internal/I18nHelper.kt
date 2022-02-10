@@ -100,23 +100,23 @@ object I18nHelper {
         val map = mutableMapOf<String, String>()
         for (key in config.keys) {
             val get = config.get(key)
-            if (get is String)
-                map[key] = ChatColor.translateAlternateColorCodes('&', get)
-            else addLocaleKeys(map,config, key)
+            if (get !is Configuration && get !is List<*>)
+                map[key] = ChatColor.translateAlternateColorCodes('&', get.toString())
+            else if (get is Configuration)
+                addLocaleKeys(map, config, key)
         }
         return map
     }
 
     private fun addLocaleKeys(map: MutableMap<String, String>, config: Configuration, path: String) {
-        val section = config.get(path)
-        if (section is Configuration)
-            for (key in section.keys) {
-                val fullKey = "$path.$key"
-                val get = config.get(fullKey)
-                if (get is String)
-                    map[fullKey] = ChatColor.translateAlternateColorCodes('&', config.getString(fullKey))
-                else addLocaleKeys(map, config, fullKey)
-            }
+        val section = config.get(path) as Configuration
+        for (key in section.keys) {
+            val fullKey = "$path.$key"
+            val get = config.get(fullKey)
+            if (get !is Configuration && get !is List<*>)
+                map[fullKey] = ChatColor.translateAlternateColorCodes('&', config.getString(fullKey))
+            else addLocaleKeys(map, config, fullKey)
+        }
     }
 
 }
