@@ -1,4 +1,4 @@
-rootProject.name = "bungeepluginmanagerplus"
+rootProject.name = "BungeePluginManagerPlus"
 include(
     "bungeecord",
     "api",

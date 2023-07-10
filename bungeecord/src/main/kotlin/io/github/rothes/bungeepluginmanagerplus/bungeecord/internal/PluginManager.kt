@@ -23,6 +23,7 @@ import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.plugin.PluginDescription
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
+import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.Constructor
 import java.io.File
@@ -36,7 +37,7 @@ import net.md_5.bungee.api.plugin.PluginManager as BungeePluginManager
 object PluginManager {
 
     private val yaml: Yaml by lazy {
-        val yamlConstructor = Constructor()
+        val yamlConstructor = Constructor(LoaderOptions())
         val propertyUtils = yamlConstructor.propertyUtils
         propertyUtils.isSkipMissingProperties = true
         yamlConstructor.propertyUtils = propertyUtils

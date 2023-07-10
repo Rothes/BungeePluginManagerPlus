@@ -8,7 +8,7 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":api", "shadow"))
 
-    compileOnly("net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT")
     implementation("org.bstats:bstats-bungeecord:3.0.0")
 }
 
