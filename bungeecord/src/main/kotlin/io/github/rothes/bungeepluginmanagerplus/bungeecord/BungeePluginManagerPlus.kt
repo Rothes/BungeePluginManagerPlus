@@ -16,6 +16,7 @@ import io.github.rothes.bungeepluginmanagerplus.bungeecord.internal.info
 import net.md_5.bungee.api.plugin.Plugin
 import org.bstats.bungeecord.Metrics
 import java.io.File
+import java.util.*
 
 class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
 
@@ -49,7 +50,9 @@ class BungeePluginManagerPlus : Plugin(), BungeePluginManagerPlusAPI {
         proxy.pluginManager.registerCommand(this, CommandHandler)
         proxy.pluginManager.registerListener(this, Listeners)
         Updater.start()
-        info(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Windows-Warning"))
+        if (System.getProperty("os.name").lowercase(Locale.getDefault()).contains("windows")) {
+            info(I18nHelper.getLocaleMessage("Console-Sender.Rename-File.Windows-Warning"))
+        }
         Metrics(this, 13875)
     }
 
