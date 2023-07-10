@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 object Updater {
 
     private const val VERSION_CHANNCEL = "Stable"
-    private const val VERSION_NUMBER = 5
+    private const val VERSION_NUMBER = 6
     private val msgTimesMap = mutableMapOf<String, Int>()
     private val HOST_STRING: String by lazy {
         if (I18nHelper.locale == "zh-CN") "raw.fastgit.org"
